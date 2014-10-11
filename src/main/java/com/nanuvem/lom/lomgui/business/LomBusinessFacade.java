@@ -1,148 +1,133 @@
 package com.nanuvem.lom.lomgui.business;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.nanuvem.lom.lomgui.resources.Attribute;
-import com.nanuvem.lom.lomgui.resources.Clazz;
-import com.nanuvem.lom.lomgui.resources.Instance;
+import com.nanuvem.lom.kernel.Attribute;
+import com.nanuvem.lom.kernel.AttributeServiceImpl;
+import com.nanuvem.lom.kernel.AttributeType;
+import com.nanuvem.lom.kernel.Class;
+import com.nanuvem.lom.kernel.ClassServiceImpl;
+import com.nanuvem.lom.kernel.Instance;
+import com.nanuvem.lom.kernel.InstanceServiceImpl;
+import com.nanuvem.lom.kernel.ServiceFactory;
+import com.nanuvem.lom.kernel.dao.memory.MemoryDaoFactory;
 
 public class LomBusinessFacade {
 
 	private static LomBusinessFacade singleton;
-	
-	private static Long classesCounter = 0l;
-	private static Long attributesCounter = 0l;
-	private static Long instancesCounter = 0l;
 
-	public static LomBusinessFacade getInstance(){
-		if(LomBusinessFacade.singleton == null){
+	public static LomBusinessFacade getInstance() {
+		if (LomBusinessFacade.singleton == null) {
 			LomBusinessFacade.singleton = new LomBusinessFacade();
 		}
 		return LomBusinessFacade.singleton;
 	}
 
-	private Map<Long, Clazz> classes;
-	private Map<Long, Attribute> attributes;
-	private Map<Long, Instance> instances;
+	private ClassServiceImpl classService;
+	private AttributeServiceImpl attributeService;
+	private InstanceServiceImpl instanceService;
 
 	private LomBusinessFacade() {
-		this.classes = new HashMap<Long, Clazz>();
-		this.attributes = new HashMap<Long, Attribute>();
-		this.instances = new HashMap<Long, Instance>();
+		ServiceFactory serviceFactory = new ServiceFactory(
+				new MemoryDaoFactory());
+		classService = serviceFactory.getClassService();
+		attributeService = serviceFactory.getAttributeService();
+		instanceService = serviceFactory.getInstanceService();
 		mock();
 	}
 
 	private void mock() {
-		Clazz aClazz = new Clazz();
-		aClazz.setName("Widget");
-		addClass(aClazz);
-		
+		Class aClass = new Class();
+		aClass.setName("Product");
+		addClass(aClass);
+
 		Attribute attributeName = new Attribute();
-		attributeName.setClassID(aClazz.getId());
-		attributeName.setName("nome");
+		attributeName.setClazz(aClass);
+		attributeName.setName("name");
+		attributeName.setType(AttributeType.TEXT);
 		addAttribute(attributeName);
-		
+
 	}
 
-	public Clazz addClass(Clazz clazz){
-		clazz.setId(classesCounter++);
-		this.classes.put(clazz.getId(), clazz);
-		return clazz;
+	public Class addClass(Class clazz) {
+		classService.create(clazz);
+		return getClass(clazz.getFullName());
 	}
 
-	public Clazz getClass(String fullname){
-		for(Clazz clazz : this.classes.values()){
-			if(clazz.getFullName().equals(fullname)){
-				return clazz;
-			}
-		}
-		return null;
+	public Class getClass(String fullname) {
+		return classService.readClass(fullname);
 	}
 
-	public Clazz getClass(Long id){
-		return this.classes.get(id);
+	public Class getClass(Long id) {
+		return classService.findClassById(id);
 	}
 
-	public Collection<Clazz> getAllClasses(){
-		return classes.values();
+	public Collection<Class> getAllClasses() {
+		return classService.listAll();
 	}
 
-	public boolean removeClass(String name){
-		for(Clazz clazz : this.classes.values()){
-			if(clazz.getName().equals(name)){
-				return removeClass(clazz.getId());
-			}
+	public boolean removeClass(String fullname) {
+		Class clazz = getClass(fullname);
+		if (clazz != null) {
+			classService.delete(clazz);
+			return true;
 		}
 		return false;
 	}
 
-	public boolean removeClass(Long id){
-		return this.classes.remove(id) != null;
+	public boolean removeClass(Long id) {
+		Class clazz = getClass(id);
+		if (clazz != null) {
+			classService.delete(clazz);
+			return true;
+		}
+		return false;
 	}
 
-	public void removeAllClasses(){
-		this.classes.clear();
+	public Attribute addAttribute(Attribute attribute) {
+		attributeService.create(attribute);
+		return attributeService.findAttributeByNameAndClassFullName(
+				attribute.getName(), attribute.getClazz().getFullName());
+	}
+
+	public Attribute getAttribute(Long id) {
+		return attributeService.findAttributeById(id);
+	}
+
+	public List<Attribute> getAttributesByClassId(Long classId) {
+		return getClass(classId).getAttributes();
 	}
 	
-	public Attribute addAttribute(Attribute attribute){
-		attribute.setId(attributesCounter++);
-		this.attributes.put(attribute.getId(), attribute);
-		return attribute;
+	public List<Attribute> getAttributesByClassFullName(String classFullName) {
+		return getClass(classFullName).getAttributes();
 	}
-	
-	public Attribute getAttribute(Long id){
-		return attributes.get(id);
+
+	public boolean removeAttribute(Long id) {
+		//TODO waiting kernel method
+		return false;
 	}
-	
-	public List<Attribute> getAttributesByClassID(Long classID){
-		ArrayList<Attribute> classAttributes = new ArrayList<Attribute>();
-		for(Attribute attribute : attributes.values()){
-			if(attribute.getClassID() == classID){
-				classAttributes.add(attribute);
-			}
-		}
-		return classAttributes;
-	}
-	
-	public boolean removeAttribute(Long id){
-		return this.attributes.remove(id) != null;
-	}
-	
-	public Collection<Attribute> getAllAttributes(){
-		return attributes.values();
-	}
-	
-	public Instance addInstance(Instance instance){
-		instance.setId(instancesCounter++);
-		this.instances.put(instance.getId(), instance);
+
+	public Instance addInstance(Instance instance) {
+		instanceService.create(instance);
 		return instance;
 	}
-	
-	public Instance getInstance(Long id){
-		return instances.get(id);
-	}
-	
-	public List<Instance> getInstancesByClassID(Long classID){
-		ArrayList<Instance> classInstances = new ArrayList<Instance>();
-		for(Instance instance : instances.values()){
-			if(instance.getClassID() == classID){
-				classInstances.add(instance);
-			}
-		}
-		return classInstances;
-	}
-	
-	public boolean removeInstance(Long id){
-		return this.instances.remove(id) != null;
-	}
-	
-	public Collection<Instance> getAllInstances(){
-		return instances.values();
+
+	public Instance getInstance(Long id) {
+		return instanceService.findInstanceById(id);
 	}
 
+	public List<Instance> getInstancesByClassID(Long classID) {
+		return getClass(classID).getInstances();
+	}
+	
+	public List<Instance> getInstancesByClassFullName(String classFullName) {
+		return getClass(classFullName).getInstances();
+	}
+
+	public boolean removeInstance(Long id) {
+		//TODO waiting kernel method
+		return false;
+	}
 
 }

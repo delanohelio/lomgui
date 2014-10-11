@@ -26,16 +26,22 @@ public class WidgetStoreFacade {
 	private WidgetStoreFacade() {
 		widgets = new HashSet<Widget>();
 		widgetsMapping = new HashMap<String, Widget>();
-		Widget defaultRootWidget = new Widget("TableRootWidget", "TableRootWidget");
-		addWidget(defaultRootWidget);
-		Widget defaultClassWidget = new Widget("TableClassListingWidget", "TableClassListingWidget");
-		addWidget(defaultRootWidget);
-		addWidget(defaultClassWidget);
-		widgetsMapping.put("root", defaultRootWidget);
-		widgetsMapping.put("class", defaultClassWidget);
+		mock();
 	}
 	
-	public void addWidget(Widget widget){
+	private void mock() {
+		Widget defaultRootWidget = new Widget("TableRootWidget", "TableRootWidget");
+		addWidget(defaultRootWidget);
+		Widget widgetRootUl = new Widget("UlRootWidget", "UlRootWidget");
+		addWidget(widgetRootUl);
+		Widget defaultClassWidget = new Widget("TableClassListingWidget", "TableClassListingWidget");
+		addWidget(defaultClassWidget);
+		
+		setWidgetToTarget("root", defaultRootWidget);
+		setWidgetToTarget("class", defaultClassWidget);
+	}
+
+	private void addWidget(Widget widget){
 		widgets.add(widget);
 	}
 	

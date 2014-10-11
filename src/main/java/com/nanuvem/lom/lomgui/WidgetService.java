@@ -10,11 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
-
+import com.google.gson.Gson;
 import com.nanuvem.lom.lomgui.resources.Widget;
 
 @Path("/widget")
@@ -22,18 +18,6 @@ public class WidgetService {
 
 	@Context
 	private HttpServletRequest servletRequest;
-
-	@POST
-	public Response addWidget(String json) {
-		try {
-			ObjectNode widgetJson = (ObjectNode) jsonNodeFromString(json);
-			WidgetStoreFacade.getInstance().addWidget(
-					Widget.widgetFromJson(widgetJson));
-			return Response.created(null).build();
-		} catch (Exception e) {
-			return Response.notAcceptable(null).build();
-		}
-	}
 
 	@GET
 	@Produces("text/plain; charset=utf-8")
@@ -51,9 +35,10 @@ public class WidgetService {
 	@Path("/root")
 	public Response setRootWidget(String json, @Context UriInfo uriInfo) {
 		try {
-			JsonNode jsonNode = jsonNodeFromString(json);
-			Widget widget = WidgetStoreFacade.getInstance().getWidgetFromName(
-					jsonNode.get("widget").getTextValue());
+			Gson gson = new Gson();
+			Widget widget = gson.fromJson(json, Widget.class);
+			widget = WidgetStoreFacade.getInstance().getWidgetFromName(
+					widget.getName());
 			saveWidgetByPath(uriInfo.getPath(), widget);
 			return Response.ok().build();
 		} catch (Exception e) {
@@ -105,17 +90,14 @@ public class WidgetService {
 			return;
 		}
 
-		if (pathComponents[1].equals("root")) {
+		else if (pathComponents[1].equals("root")) {
 			WidgetStoreFacade.getInstance().setWidgetToTarget("root", widget);
 		}
-	}
-
-	private JsonNode jsonNodeFromString(String json) throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonFactory factory = objectMapper.getJsonFactory();
-		JsonNode jsonNode = (JsonNode) objectMapper.readTree(factory
-				.createJsonParser(json));
-		return jsonNode;
+		
+		else if (pathComponents[1].equals("class")) {
+			//TODO make to specific class (class/nameclass)
+			WidgetStoreFacade.getInstance().setWidgetToTarget("class", widget);
+		}
 	}
 
 }

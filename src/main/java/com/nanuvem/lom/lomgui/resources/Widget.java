@@ -1,6 +1,5 @@
 package com.nanuvem.lom.lomgui.resources;
 
-import org.codehaus.jackson.JsonNode;
 
 /**
  * This class represent a Widget
@@ -8,7 +7,7 @@ import org.codehaus.jackson.JsonNode;
  *
  */
 
-public class Widget extends JSONBean {
+public class Widget{
 
 	private String name;
 	private String filename;
@@ -39,12 +38,6 @@ public class Widget extends JSONBean {
 		this.filename = filename;
 	}
 
-	public static Widget widgetFromJson(JsonNode widgetJson) {
-		Widget widget = new Widget();
-		widget.setValuesFromJson(widgetJson);
-		return widget;
-	}
-	
 	@Override
 	public int hashCode() {
 		return name.hashCode();
