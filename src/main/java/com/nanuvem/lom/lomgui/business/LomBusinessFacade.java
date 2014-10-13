@@ -39,6 +39,7 @@ public class LomBusinessFacade {
 
 	private void mock() {
 		Class aClass = new Class();
+		aClass.setNamespace("test");
 		aClass.setName("Product");
 		addClass(aClass);
 

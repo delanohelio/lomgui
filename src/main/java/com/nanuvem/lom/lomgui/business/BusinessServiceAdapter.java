@@ -85,7 +85,10 @@ public class BusinessServiceAdapter {
 		Class clazz = LomBusinessFacade.getInstance().getClass(fullName);
 		if (clazz != null) {
 			try {
-				Gson gson = new Gson();
+				Gson gson = new GsonBuilder()
+		        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz")))
+		        .serializeNulls()
+		        .create();
 				Attribute attribute = gson.fromJson(json, Attribute.class);
 				attribute.setClazz(clazz);
 				attribute = LomBusinessFacade.getInstance().addAttribute(
@@ -98,6 +101,16 @@ public class BusinessServiceAdapter {
 				return Response.notAcceptable(null).build();
 			}
 		}
+		return Response.notAcceptable(null).build();
+	}
+	
+	@DELETE
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/class/{fullName}/attributes/{id}")
+	public Response deleteAttribute(@PathParam("fullName") String fullName, @PathParam("id") Long id) {
+		if (LomBusinessFacade.getInstance().removeAttribute(id))
+			return Response.ok().build();
+		System.out.println("Foi pra k");
 		return Response.notAcceptable(null).build();
 	}
 
@@ -136,53 +149,10 @@ public class BusinessServiceAdapter {
 		return Response.notAcceptable(null).build();
 	}
 
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/attribute")
-	public Response addAttribute(String json) {
-		try {
-			Gson gson = new Gson();
-			Attribute attribute = gson.fromJson(json, Attribute.class);
-			attribute = LomBusinessFacade.getInstance().addAttribute(attribute);
-			ResponseBuilderImpl builder = new ResponseBuilderImpl();
-			builder.status(201);
-			builder.entity(gson.toJson(attribute));
-			return builder.build();
-		} catch (Exception e) {
-			return Response.notAcceptable(null).build();
-		}
-	}
-
 	@DELETE
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/attribute/{id}")
-	public Response deleteAttribute(@PathParam("id") Long id) {
-		if (LomBusinessFacade.getInstance().removeAttribute(id))
-			return Response.ok().build();
-		return Response.notAcceptable(null).build();
-	}
-
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/instance")
-	public Response addInstance(String json) {
-		try {
-			Gson gson = new Gson();
-			Instance instance = gson.fromJson(json, Instance.class);
-			instance = LomBusinessFacade.getInstance().addInstance(instance);
-			ResponseBuilderImpl builder = new ResponseBuilderImpl();
-			builder.status(201);
-			builder.entity(gson.toJson(instance));
-			return builder.build();
-		} catch (Exception e) {
-			return Response.notAcceptable(null).build();
-		}
-	}
-
-	@DELETE
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/instance/{id}")
-	public Response deleteInstance(@PathParam("id") Long id) {
+	@Path("/class/{fullName}/instances/{id}")
+	public Response deleteInstance(@PathParam("fullName") String fullName, @PathParam("id") Long id) {
 		if (LomBusinessFacade.getInstance().removeInstance(id))
 			return Response.ok().build();
 		return Response.notAcceptable(null).build();

@@ -3,18 +3,25 @@ package com.nanuvem.lom.lomgui.resources;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.nanuvem.lom.kernel.Instance;
-import com.nanuvem.restest.TypedResource;
+import com.nanuvem.restest.TypedSubResource;
 
-public class InstanceResource extends TypedResource<Instance> {
+public class InstanceResource extends TypedSubResource<Instance> {
 	
-	private static final String INSTANCES = "http://localhost:8080/lomgui/api/data/instance";
+	private static final String ROOTURL = "http://localhost:8080/lomgui/api/data/class";
+	private static final String INSTANCESURL = "instances";
 	private Gson gson;
 	
 	public InstanceResource() {
-		super(INSTANCES);
+		super(ROOTURL, INSTANCESURL);
+		gson = new GsonBuilder()
+        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz", "values")))
+        .serializeNulls()
+        .create();
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class RootWidgetTest {
 	@AfterClass
 	public static void tearDown() {
 		driver.close();
-//		clazzResource.delete(clazz.getId().toString());
+		clazzResource.delete(clazz.getId().toString());
 	}
 
 	@Test

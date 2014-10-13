@@ -3,6 +3,9 @@ package com.nanuvem.lom.lomgui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+
+import org.apache.http.ParseException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -10,8 +13,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.nanuvem.lom.kernel.Class;
 import com.nanuvem.lom.kernel.Attribute;
+import com.nanuvem.lom.kernel.AttributeType;
+import com.nanuvem.lom.kernel.Class;
 import com.nanuvem.lom.lomgui.resources.AttributeResource;
 import com.nanuvem.lom.lomgui.resources.ClassResource;
 
@@ -27,7 +31,7 @@ public class ClassWidgetTest {
 	private static Attribute nameAttribute;
 	
 	@BeforeClass
-	public static void setUp() {
+	public static void setUp() throws ParseException, IOException {
 		driver = new FirefoxDriver();
 		
 		clazzResource = new ClassResource();
@@ -39,8 +43,8 @@ public class ClassWidgetTest {
 		attributeResource = new AttributeResource();
 		nameAttribute = new Attribute();
 		nameAttribute.setName("name");
-		nameAttribute.setClazz(clazz);
-		attributeResource.post(nameAttribute);
+		nameAttribute.setType(AttributeType.TEXT);
+		nameAttribute = attributeResource.postEntity(clazz.getFullName(), nameAttribute);
 	}
 
 	@AfterClass

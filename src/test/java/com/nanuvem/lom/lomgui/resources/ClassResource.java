@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.nanuvem.lom.kernel.Class;
 import com.nanuvem.restest.TypedResource;
@@ -16,7 +17,9 @@ public class ClassResource extends TypedResource<Class> {
 
 	public ClassResource() {
 		super(CLASSES);
-		gson = new Gson();
+		gson = new GsonBuilder()
+        .registerTypeAdapter(Class.class, new LomClassSerializer())
+        .create();
 	}
 
 	@Override

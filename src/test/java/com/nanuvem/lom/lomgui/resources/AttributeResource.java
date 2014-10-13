@@ -1,22 +1,33 @@
 package com.nanuvem.lom.lomgui.resources;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.util.EntityUtils;
+
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.nanuvem.lom.kernel.Attribute;
-import com.nanuvem.restest.TypedResource;
+import com.nanuvem.restest.TypedSubResource;
 
-public class AttributeResource extends TypedResource<Attribute>  {
+public class AttributeResource extends TypedSubResource<Attribute> {
 
-	private static final String ATTRIBUTES = "http://localhost:8080/lomgui/api/data/attribute";
+	private static final String ROOTURL = "http://localhost:8080/lomgui/api/data/class";
+	private static final String ATTRIBUTESURL = "attributes";
 	private Gson gson;
 
 
 	public AttributeResource() {
-		super(ATTRIBUTES);
-		gson = new Gson();
+		super(ROOTURL, ATTRIBUTESURL);
+		gson = new GsonBuilder()
+        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz")))
+        .serializeNulls()
+        .create();
 	}
 
 	@Override
@@ -33,6 +44,13 @@ public class AttributeResource extends TypedResource<Attribute>  {
 	@Override
 	protected Attribute toObject(String json) {
 		return gson.fromJson(json, Attribute.class);
+	}
+	
+	
+	public Attribute postEntity(String resourceId, Attribute s) throws ParseException, IOException {
+		HttpResponse response = post(resourceId, s);
+		return toObject(EntityUtils.toString(response.getEntity()));
+		
 	}
 
 }
