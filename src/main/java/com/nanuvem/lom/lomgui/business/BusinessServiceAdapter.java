@@ -3,6 +3,7 @@ package com.nanuvem.lom.lomgui.business;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -33,6 +34,7 @@ public class BusinessServiceAdapter {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class")
 	public Response addClass(String json) {
 		try {
@@ -79,6 +81,7 @@ public class BusinessServiceAdapter {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class/{fullName}/attributes")
 	public Response addAttributeToClass(@PathParam("fullName") String fullName,
 			String json) {
@@ -104,13 +107,38 @@ public class BusinessServiceAdapter {
 		return Response.notAcceptable(null).build();
 	}
 	
-	@DELETE
+	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/class/{fullName}/attributes/{id}")
+	public Response updateAttribute(@PathParam("fullName") String fullName, @PathParam("id") Long id, String json) {
+		Class clazz = LomBusinessFacade.getInstance().getClass(fullName);
+		if (clazz != null) {
+			//TODO check if attribute exist in class
+			try {
+				Gson gson = new GsonBuilder()
+		        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz")))
+		        .serializeNulls()
+		        .create();
+				Attribute attribute = gson.fromJson(json, Attribute.class);
+				attribute.setClazz(clazz);
+				attribute = LomBusinessFacade.getInstance().updateAttribute(
+						attribute);
+				ResponseBuilderImpl builder = new ResponseBuilderImpl();
+				builder.status(200);
+				builder.entity(gson.toJson(attribute));
+				return builder.build();
+			} catch (Exception e) {
+				return Response.notAcceptable(null).build();
+			}
+		}
+		return Response.notAcceptable(null).build();
+	}
+	
+	@DELETE
 	@Path("/class/{fullName}/attributes/{id}")
 	public Response deleteAttribute(@PathParam("fullName") String fullName, @PathParam("id") Long id) {
 		if (LomBusinessFacade.getInstance().removeAttribute(id))
 			return Response.ok().build();
-		System.out.println("Foi pra k");
 		return Response.notAcceptable(null).build();
 	}
 
@@ -127,6 +155,7 @@ public class BusinessServiceAdapter {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class/{fullName}/instances")
 	public Response addInstanceToClass(@PathParam("fullName") String fullName,
 			String json) {
@@ -150,7 +179,6 @@ public class BusinessServiceAdapter {
 	}
 
 	@DELETE
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class/{fullName}/instances/{id}")
 	public Response deleteInstance(@PathParam("fullName") String fullName, @PathParam("id") Long id) {
 		if (LomBusinessFacade.getInstance().removeInstance(id))

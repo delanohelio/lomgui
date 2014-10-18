@@ -1,12 +1,7 @@
 package com.nanuvem.lom.lomgui.resources;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.util.EntityUtils;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
@@ -44,13 +39,6 @@ public class AttributeResource extends TypedSubResource<Attribute> {
 	@Override
 	protected Attribute toObject(String json) {
 		return gson.fromJson(json, Attribute.class);
-	}
-	
-	
-	public Attribute postEntity(String resourceId, Attribute s) throws ParseException, IOException {
-		HttpResponse response = post(resourceId, s);
-		return toObject(EntityUtils.toString(response.getEntity()));
-		
 	}
 
 }

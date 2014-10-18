@@ -103,6 +103,10 @@ public class LomBusinessFacade {
 	public List<Attribute> getAttributesByClassFullName(String classFullName) {
 		return getClass(classFullName).getAttributes();
 	}
+	
+	public Attribute updateAttribute(Attribute attribute) {
+		return attributeService.update(attribute);
+	}
 
 	public boolean removeAttribute(Long id) {
 		//TODO waiting kernel method

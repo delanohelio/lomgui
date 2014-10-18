@@ -9,11 +9,15 @@ import com.nanuvem.restest.TypedResource;
 
 public class WidgetResource extends TypedResource<Widget> {
 
-	private static final String WIDGETS = "http://localhost:8080/lomgui/api/widget";
+	private static final String ROOTURL = "http://localhost:8080/lomgui/api/widget";
 	private Gson gson;
 
-	public WidgetResource() {
-		super(WIDGETS);
+	public static WidgetResource getWidgetResource(String resourceName) {
+		return new WidgetResource(resourceName);
+	}
+	
+	public WidgetResource(String resourceName) {
+		super(ROOTURL + "/" + resourceName);
 		gson = new Gson();
 	}
 
