@@ -7,7 +7,14 @@ import com.google.gson.FieldAttributes;
 
 public class LomAttributesExclusionStrategy implements ExclusionStrategy {
 	
+	private Class<?> classToFilter;
 	private Set<String> excludeAttributesName;
+	
+	public LomAttributesExclusionStrategy(Class<?> clazz, Set<String> attributesName) {
+		super();
+		this.classToFilter = clazz;
+		this.excludeAttributesName = attributesName;
+	}
 	
 	public LomAttributesExclusionStrategy(Set<String> attributesName) {
 		super();
@@ -21,6 +28,8 @@ public class LomAttributesExclusionStrategy implements ExclusionStrategy {
 
 	@Override
 	public boolean shouldSkipField(FieldAttributes attribute) {
+		if(classToFilter != null && attribute.getDeclaringClass() != classToFilter)
+			return false;
 		if(excludeAttributesName.contains(attribute.getName()))
 			return true;
 		return false;

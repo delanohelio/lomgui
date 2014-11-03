@@ -10,14 +10,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nanuvem.lom.kernel.Attribute;
 import com.nanuvem.lom.kernel.Class;
 import com.nanuvem.lom.kernel.Instance;
-import com.nanuvem.lom.lomgui.resources.LomAttributesExclusionStrategy;
-import com.nanuvem.lom.lomgui.resources.LomClassSerializer;
+import com.nanuvem.lom.lomgui.resources.LomGsonFactory;
 import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 
 @Path("data")
@@ -27,9 +24,7 @@ public class BusinessServiceAdapter {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class")
 	public String getClasses() {
-		Gson gson = new GsonBuilder()
-        .registerTypeAdapter(Class.class, new LomClassSerializer())
-        .create();
+		Gson gson = new LomGsonFactory().getClassGson();
 		return gson.toJson(LomBusinessFacade.getInstance().getAllClasses());
 	}
 
@@ -54,9 +49,7 @@ public class BusinessServiceAdapter {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class/{id}")
 	public String getClass(@PathParam("id") Long id) {
-		Gson gson = new GsonBuilder()
-        .registerTypeAdapter(Class.class, new LomClassSerializer())
-        .create();
+		Gson gson = new LomGsonFactory().getClassGson();
 		return gson.toJson(LomBusinessFacade.getInstance().getClass(id));
 	}
 
@@ -72,10 +65,7 @@ public class BusinessServiceAdapter {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class/{fullName}/attributes")
 	public String getAttributesFromClass(@PathParam("fullName") String fullName) {
-		Gson gson = new GsonBuilder()
-        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz")))
-        .serializeNulls()
-        .create();
+		Gson gson = new LomGsonFactory().getAttributeGson();
 		return gson.toJson(LomBusinessFacade.getInstance()
 				.getAttributesByClassFullName(fullName));
 	}
@@ -88,10 +78,7 @@ public class BusinessServiceAdapter {
 		Class clazz = LomBusinessFacade.getInstance().getClass(fullName);
 		if (clazz != null) {
 			try {
-				Gson gson = new GsonBuilder()
-		        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz")))
-		        .serializeNulls()
-		        .create();
+				Gson gson = new LomGsonFactory().getAttributeGson();
 				Attribute attribute = gson.fromJson(json, Attribute.class);
 				attribute.setClazz(clazz);
 				attribute = LomBusinessFacade.getInstance().addAttribute(
@@ -115,10 +102,7 @@ public class BusinessServiceAdapter {
 		if (clazz != null) {
 			//TODO check if attribute exist in class
 			try {
-				Gson gson = new GsonBuilder()
-		        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz")))
-		        .serializeNulls()
-		        .create();
+				Gson gson = new LomGsonFactory().getAttributeGson();
 				Attribute attribute = gson.fromJson(json, Attribute.class);
 				attribute.setClazz(clazz);
 				attribute = LomBusinessFacade.getInstance().updateAttribute(
@@ -146,10 +130,7 @@ public class BusinessServiceAdapter {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class/{fullName}/instances")
 	public String getInstances(@PathParam("fullName") String fullName) {
-		Gson gson = new GsonBuilder()
-        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz", "values")))
-        .serializeNulls()
-        .create();
+		Gson gson = new LomGsonFactory().getInstanceGson();
 		return gson.toJson(LomBusinessFacade.getInstance()
 				.getInstancesByClassFullName(fullName));
 	}
@@ -162,7 +143,7 @@ public class BusinessServiceAdapter {
 		Class clazz = LomBusinessFacade.getInstance().getClass(fullName);
 		if (clazz != null) {
 			try {
-				Gson gson = new Gson();
+				Gson gson = new LomGsonFactory().getInstanceGson();
 				Instance instance = gson.fromJson(json, Instance.class);
 				instance.setClazz(clazz);
 				instance = LomBusinessFacade.getInstance()
@@ -172,6 +153,7 @@ public class BusinessServiceAdapter {
 				builder.entity(gson.toJson(instance));
 				return builder.build();
 			} catch (Exception e) {
+				e.printStackTrace();
 				return Response.notAcceptable(null).build();
 			}
 		}

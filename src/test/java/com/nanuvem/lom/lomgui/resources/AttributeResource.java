@@ -3,9 +3,7 @@ package com.nanuvem.lom.lomgui.resources;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.nanuvem.lom.kernel.Attribute;
 import com.nanuvem.restest.TypedSubResource;
@@ -19,10 +17,7 @@ public class AttributeResource extends TypedSubResource<Attribute> {
 
 	public AttributeResource() {
 		super(ROOTURL, ATTRIBUTESURL);
-		gson = new GsonBuilder()
-        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("clazz")))
-        .serializeNulls()
-        .create();
+		gson = new LomGsonFactory().getAttributeGson();
 	}
 
 	@Override

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -14,11 +17,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import com.google.common.collect.ImmutableMap;
 import com.nanuvem.lom.kernel.Attribute;
 import com.nanuvem.lom.kernel.AttributeType;
+import com.nanuvem.lom.kernel.AttributeValue;
 import com.nanuvem.lom.kernel.Class;
+import com.nanuvem.lom.kernel.Instance;
 import com.nanuvem.lom.lomgui.resources.AttributeResource;
 import com.nanuvem.lom.lomgui.resources.ClassResource;
+import com.nanuvem.lom.lomgui.resources.InstanceResource;
 
 public class ClassWidgetTest {
 	
@@ -30,6 +37,7 @@ public class ClassWidgetTest {
 	private static Class clazz2;
 	
 	private static AttributeResource attributeResource;
+	private static InstanceResource instanceResource;
 	
 	@BeforeClass
 	public static void setUp() throws ParseException, IOException {
@@ -47,6 +55,7 @@ public class ClassWidgetTest {
 		clazzResource.post(clazz2);
 		
 		attributeResource = new AttributeResource();
+		instanceResource = new InstanceResource();
 	}
 
 	@AfterClass
@@ -58,7 +67,8 @@ public class ClassWidgetTest {
 	//TODO test several class widget hooks 
 	
 	@Test
-	public void scenarioCheckAddAttribute() {
+	public void scenarioCheckAddAttributeAndInstance() {
+		//Attribute
 		Attribute nameAttribute = createAndAddAttribute(clazz1, "name", AttributeType.TEXT);
 		
 		accessClassWidget(clazz1);
@@ -69,6 +79,23 @@ public class ClassWidgetTest {
 		
 		assertNotNull("Attribute not found: " + nameAttribute.getName(), attributeElement);
 		assertEquals(nameAttribute.getName(), attributeElement.getText());
+		
+		//Instance
+		
+		String nameValue = "Delano";
+		Map<Attribute, Object> attributesValuesMap = ImmutableMap.<Attribute, Object>builder()
+				.put(nameAttribute, nameValue)
+				.build();
+		Instance nameInstance = createAndAddInstance(clazz1, attributesValuesMap);
+		
+		accessClassWidget(clazz1);
+		
+		String idAttributeValueName = "instance_" + nameInstance.getId() + "_attribute_" + nameAttribute.getId();
+		WebElement attributeValueElement = ElementHelper.waitAndFindElementById(driver,
+				idAttributeValueName, DEFAULT_TIMEOUT);
+		
+		assertNotNull("AttributeValue not found: " + nameAttribute.getName(), attributeValueElement);
+		assertEquals(nameValue, attributeValueElement.getText());
 		
 	}
 	
@@ -96,8 +123,9 @@ public class ClassWidgetTest {
 	}
 	
 	@Test
-	public void scenarioChangeAttribute() {
-		Attribute aAttribute = createAndAddAttribute(clazz1, "lastname", AttributeType.TEXT);
+	public void scenarioChangeAttributeAndValue() throws ParseException, IOException {
+		//Attribute
+		Attribute aAttribute = createAndAddAttribute(clazz1, "surname", AttributeType.TEXT);
 		accessClassWidget(clazz1);
 		String idAttribute = "attribute_" + aAttribute.getId();
 		WebElement attributeElement = ElementHelper.waitAndFindElementById(driver,
@@ -105,13 +133,16 @@ public class ClassWidgetTest {
 		assertNotNull("Attribute not found: " + aAttribute.getName(), attributeElement);
 		assertEquals(aAttribute.getName(), attributeElement.getText());
 		
-		aAttribute.setName("surname");
-		attributeResource.put(clazz1.getFullName(), aAttribute.getId().toString(), aAttribute);
+		aAttribute.setName("lastname");
+		aAttribute = attributeResource.toObject(attributeResource.put(clazz1.getFullName(), aAttribute.getId().toString(), aAttribute));
 		accessClassWidget(clazz1);
 		attributeElement = ElementHelper.waitAndFindElementById(driver,
 				idAttribute, DEFAULT_TIMEOUT);
 		assertNotNull("Attribute not found: " + aAttribute.getName(), attributeElement);
 		assertEquals(aAttribute.getName(), attributeElement.getText());
+		
+		//Instance
+		
 	}
 	
 	private void accessClassWidget(Class clazz) {
@@ -129,11 +160,38 @@ public class ClassWidgetTest {
 		attribute.setType(type);
 		try {
 			HttpResponse response = attributeResource.post(clazz.getFullName(), attribute);
+			assertEquals(201, response.getStatusLine().getStatusCode());
 			return attributeResource.toObject(response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private Instance createAndAddInstance(Class clazz, Map<Attribute, Object> attributesValuesMap) {
+		Instance instance = new Instance();
+		instance.setClazz(clazz);
+		instance.setValues(attributesValuesFromMap(attributesValuesMap, instance));
+		try {
+			HttpResponse response = instanceResource.post(clazz.getFullName(), instance);
+			assertEquals(201, response.getStatusLine().getStatusCode());
+			return instanceResource.toObject(response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private List<AttributeValue> attributesValuesFromMap(Map<Attribute, Object> attributesValuesMap, Instance instance) {
+		List<AttributeValue> attributesValues = new LinkedList<AttributeValue>();
+		for (Attribute attribute : attributesValuesMap.keySet()) {
+			AttributeValue attributeValue = new AttributeValue();
+			attributeValue.setInstance(instance);
+			attributeValue.setAttribute(attribute);
+			attributeValue.setValue(attributesValuesMap.get(attribute));
+			attributesValues.add(attributeValue);
+		}
+		return attributesValues;
 	}
 
 }

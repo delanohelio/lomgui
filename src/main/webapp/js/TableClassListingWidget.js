@@ -20,7 +20,7 @@
       this.page.append(table);
       this.buildTableHead(attributesJson, table);
       return LOM.getJSON("api/data/class/" + classFullName + "/instances", function(instances) {
-        return _this.buildTableBody(instances, attributesJson, table, classFullName);
+        return _this.buildTableBody(instances, attributesJson, table);
       });
     };
 
@@ -39,7 +39,7 @@
       });
     };
 
-    TableClassListingWidget.prototype.buildTableBody = function(instancesJson, attributesJson, table, classFullName) {
+    TableClassListingWidget.prototype.buildTableBody = function(instancesJson, attributes, table) {
       var tbody,
         _this = this;
       if (instancesJson.length > 0) {
@@ -47,27 +47,35 @@
         tbody.attr("id", "instances");
         table.append(tbody);
         return instancesJson.forEach(function(instance) {
-          return buildTableLine(instance, attributesJson, tbody, classFullName);
+          return _this.buildTableLine(instance, attributes, tbody);
         });
       } else {
         return table.append("There are not instances");
       }
     };
 
-    TableClassListingWidget.prototype.buildTableLine = function(instance, attributesJson, tbody, classFullName) {
-      var trbody,
+    TableClassListingWidget.prototype.buildTableLine = function(instance, attributes, tbody) {
+      var i, trbody,
         _this = this;
       trbody = $("<tr>");
       trbody.attr("id", "instance_" + instance.id);
       tbody.append(trbody);
-      attributesJson.forEach(function(attribute) {
-        var td;
-        td = $("<td>" + instance[attribute.name] + "</td>");
+      i = 0;
+      attributes.forEach(function(attribute) {
+        var td, v;
+        td = $("<td>");
         td.attr("id", "instance_" + instance.id + "_attribute_" + attribute.id);
+        if (i < instance.values.length) {
+          v = instance.values[i];
+          if (attribute.id === v.attribute.id) {
+            td.append(v.value);
+            i++;
+          }
+        }
         return trbody.append(td);
       });
       return trbody.click(function() {
-        return LOM.loadScript('api/widget/class/' + classFullName + '/edit', {
+        return LOM.loadScript('api/widget/class/' + instance.clazz.fullName + '/edit', {
           classFullName: classFullName,
           id: instance.id
         });

@@ -8,20 +8,19 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.nanuvem.lom.kernel.Class;
+import com.nanuvem.lom.kernel.AttributeValue;
 
-public class LomClassSerializer implements JsonSerializer<Class> {
+public class AttributeValueSerializer implements JsonSerializer<AttributeValue> {
 
 	@Override
-	public JsonElement serialize(Class clazz, Type type,
+	public JsonElement serialize(AttributeValue attributeValue, Type type,
 			JsonSerializationContext context) {
 		Gson gson = new GsonBuilder()
-        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("instances", "attributes")))
+		.addSerializationExclusionStrategy(new LomAttributesExclusionStrategy(ImmutableSet.of("instance")))
+		.registerTypeAdapter(com.nanuvem.lom.kernel.Class.class, new ClassSerializer())
         .serializeNulls()
         .create();
-		JsonElement jsonElement = gson.toJsonTree(clazz);
-		jsonElement.getAsJsonObject().addProperty("fullName", clazz.getFullName());
-		return jsonElement;
+		return gson.toJsonTree(attributeValue);
 	}
 
 }
