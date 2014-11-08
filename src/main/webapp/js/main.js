@@ -11,11 +11,19 @@
     return page;
   };
 
-  LOM.loadScript = function(url, conf) {
+  LOM.loadScript = function(url, view, conf) {
     return $.get(url, function(data, textStatus, jqxhr) {
       var x;
       x = eval(data);
-      return x.init(conf);
+      return x.init(view, conf);
+    }, "text");
+  };
+
+  LOM.loadScriptInNewView = function(url, conf) {
+    return $.get(url, function(data, textStatus, jqxhr) {
+      var x;
+      x = eval(data);
+      return x.init(LOM.emptyPage(), conf);
     }, "text");
   };
 
@@ -27,7 +35,7 @@
   };
 
   $(function() {
-    return LOM.loadScript('api/widget/root', {});
+    return LOM.loadScript('api/widget/root', LOM.emptyPage(), {});
   });
 
 }).call(this);

@@ -5,9 +5,9 @@
 
     function UlRootWidget() {}
 
-    UlRootWidget.prototype.init = function(conf) {
+    UlRootWidget.prototype.init = function(view, conf) {
       var _this = this;
-      this.page = LOM.emptyPage();
+      this.page = view;
       return LOM.getJSON('api/data/class', function(jsonObj) {
         return _this.drawList(jsonObj);
       });
@@ -31,7 +31,7 @@
       li.attr("id", "class_" + clazz.fullName);
       ul.append(li);
       return li.click(function() {
-        return LOM.loadScript('api/widget/class/' + clazz.fullName, {
+        return LOM.loadScriptInNewView('api/widget/class/' + clazz.fullName, {
           classFullName: clazz.fullName
         });
       });

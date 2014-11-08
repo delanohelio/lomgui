@@ -16,7 +16,7 @@ public class ClassSerializer implements JsonSerializer<Class> {
 	public JsonElement serialize(Class clazz, Type type,
 			JsonSerializationContext context) {
 		Gson gson = new GsonBuilder()
-        .setExclusionStrategies(new LomAttributesExclusionStrategy(ImmutableSet.of("instances", "attributes")))
+        .setExclusionStrategies(new AttributesExclusionStrategy(ImmutableSet.of("instances", "attributes")))
         .serializeNulls()
         .create();
 		JsonElement jsonElement = gson.toJsonTree(clazz);

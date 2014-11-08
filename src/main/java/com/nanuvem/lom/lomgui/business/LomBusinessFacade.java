@@ -1,11 +1,13 @@
 package com.nanuvem.lom.lomgui.business;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import com.nanuvem.lom.kernel.Attribute;
 import com.nanuvem.lom.kernel.AttributeServiceImpl;
 import com.nanuvem.lom.kernel.AttributeType;
+import com.nanuvem.lom.kernel.AttributeValue;
 import com.nanuvem.lom.kernel.Class;
 import com.nanuvem.lom.kernel.ClassServiceImpl;
 import com.nanuvem.lom.kernel.Instance;
@@ -114,6 +116,7 @@ public class LomBusinessFacade {
 	}
 
 	public Instance addInstance(Instance instance) {
+		completeInstance(instance);
 		instanceService.create(instance);
 		return instance;
 	}
@@ -129,10 +132,31 @@ public class LomBusinessFacade {
 	public List<Instance> getInstancesByClassFullName(String classFullName) {
 		return getClass(classFullName).getInstances();
 	}
+	
+	public Instance updateInstance(Instance instance) {
+		//TODO waiting kernel method
+		return null;
+	}
 
 	public boolean removeInstance(Long id) {
 		//TODO waiting kernel method
 		return false;
 	}
+	
+	private void completeInstance(Instance instance) {
+		List<Attribute> attributes = instance.getClazz().getAttributes();
+		AttributeValue[] attributesValues = new AttributeValue[attributes.size()];
+		for(AttributeValue attributeValue : instance.getValues()){
+			attributes.remove(attributeValue.getAttribute());
+			attributesValues[attributeValue.getAttribute().getSequence()-1] =  attributeValue;
+		}
+		for(Attribute attribute : attributes){
+			AttributeValue attributeValue = new AttributeValue();
+			attributeValue.setAttribute(attribute);
+			attributesValues[attributeValue.getAttribute().getSequence()-1] =  attributeValue;
+		}
+		instance.setValues(Arrays.asList(attributesValues));
+	}
+
 
 }

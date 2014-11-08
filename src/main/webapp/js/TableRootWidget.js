@@ -5,9 +5,9 @@
 
     function TableRootWidget() {}
 
-    TableRootWidget.prototype.init = function(conf) {
+    TableRootWidget.prototype.init = function(view, conf) {
       var _this = this;
-      this.page = LOM.emptyPage();
+      this.page = view;
       return LOM.getJSON('api/data/class', function(jsonObj) {
         return _this.drawTable(jsonObj);
       });
@@ -33,7 +33,7 @@
       tr.attr("id", "class_" + clazz.fullName);
       table.append(tr);
       return tr.click(function() {
-        return LOM.loadScript('api/widget/class/' + clazz.fullName, {
+        return LOM.loadScriptInNewView('api/widget/class/' + clazz.fullName, {
           classFullName: clazz.fullName
         });
       });

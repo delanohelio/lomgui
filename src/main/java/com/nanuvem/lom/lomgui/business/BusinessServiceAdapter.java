@@ -100,7 +100,6 @@ public class BusinessServiceAdapter {
 	public Response updateAttribute(@PathParam("fullName") String fullName, @PathParam("id") Long id, String json) {
 		Class clazz = LomBusinessFacade.getInstance().getClass(fullName);
 		if (clazz != null) {
-			//TODO check if attribute exist in class
 			try {
 				Gson gson = new LomGsonFactory().getAttributeGson();
 				Attribute attribute = gson.fromJson(json, Attribute.class);
@@ -130,7 +129,7 @@ public class BusinessServiceAdapter {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/class/{fullName}/instances")
 	public String getInstances(@PathParam("fullName") String fullName) {
-		Gson gson = new LomGsonFactory().getInstanceGson();
+		Gson gson = new LomGsonFactory().getSimpleInstanceGson();
 		return gson.toJson(LomBusinessFacade.getInstance()
 				.getInstancesByClassFullName(fullName));
 	}
@@ -154,6 +153,29 @@ public class BusinessServiceAdapter {
 				return builder.build();
 			} catch (Exception e) {
 				e.printStackTrace();
+				return Response.notAcceptable(null).build();
+			}
+		}
+		return Response.notAcceptable(null).build();
+	}
+	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/class/{fullName}/instances/{id}")
+	public Response updateInstance(@PathParam("fullName") String fullName, @PathParam("id") Long id, String json) {
+		Class clazz = LomBusinessFacade.getInstance().getClass(fullName);
+		if (clazz != null) {
+			try {
+				Gson gson = new LomGsonFactory().getInstanceGson();
+				Instance instance = gson.fromJson(json, Instance.class);
+				instance.setClazz(clazz);
+				instance = LomBusinessFacade.getInstance().updateInstance(
+						instance);
+				ResponseBuilderImpl builder = new ResponseBuilderImpl();
+				builder.status(200);
+				builder.entity(gson.toJson(instance));
+				return builder.build();
+			} catch (Exception e) {
 				return Response.notAcceptable(null).build();
 			}
 		}

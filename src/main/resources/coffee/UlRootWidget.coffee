@@ -1,7 +1,7 @@
 class UlRootWidget
 
-    init: (conf) ->
-        @page = LOM.emptyPage()
+    init: (view, conf) ->
+        @page = view
         LOM.getJSON 'api/data/class', (jsonObj) =>
             @drawList(jsonObj)
 
@@ -17,7 +17,7 @@ class UlRootWidget
         li.attr "id", "class_" + clazz.fullName
         ul.append li
         li.click => 
-            LOM.loadScript 'api/widget/class/'+ clazz.fullName,
+            LOM.loadScriptInNewView 'api/widget/class/'+ clazz.fullName,
                 classFullName: clazz.fullName
 
 return new UlRootWidget

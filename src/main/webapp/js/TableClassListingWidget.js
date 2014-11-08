@@ -5,33 +5,33 @@
 
     function TableClassListingWidget() {}
 
-    TableClassListingWidget.prototype.init = function(conf) {
+    TableClassListingWidget.prototype.init = function(view, conf) {
       var _this = this;
       return LOM.getJSON("api/data/class/" + conf.classFullName + "/attributes", function(attributes) {
-        return _this.drawTable(attributes, conf.classFullName);
+        return _this.drawTable(attributes, conf.classFullName, view);
       });
     };
 
-    TableClassListingWidget.prototype.drawTable = function(attributesJson, classFullName) {
+    TableClassListingWidget.prototype.drawTable = function(attributes, classFullName, view) {
       var table,
         _this = this;
-      this.page = LOM.emptyPage();
+      this.page = view;
       table = $("<table>");
       this.page.append(table);
-      this.buildTableHead(attributesJson, table);
+      this.buildTableHead(attributes, table);
       return LOM.getJSON("api/data/class/" + classFullName + "/instances", function(instances) {
-        return _this.buildTableBody(instances, attributesJson, table);
+        return _this.buildTableBody(instances, table);
       });
     };
 
-    TableClassListingWidget.prototype.buildTableHead = function(attributesJson, table) {
+    TableClassListingWidget.prototype.buildTableHead = function(attributes, table) {
       var thead, trHead;
       thead = $("<thead>");
       table.append(thead);
       trHead = $("<tr>");
       trHead.attr("id", "attributes");
       thead.append(trHead);
-      return attributesJson.forEach(function(attribute) {
+      return attributes.forEach(function(attribute) {
         var thHead;
         thHead = $("<th>" + attribute.name + "</th>");
         thHead.attr("id", "attribute_" + attribute.id);
@@ -39,44 +39,37 @@
       });
     };
 
-    TableClassListingWidget.prototype.buildTableBody = function(instancesJson, attributes, table) {
+    TableClassListingWidget.prototype.buildTableBody = function(instances, table) {
       var tbody,
         _this = this;
-      if (instancesJson.length > 0) {
+      if (instances.length > 0) {
         tbody = $("<tbody>");
         tbody.attr("id", "instances");
         table.append(tbody);
-        return instancesJson.forEach(function(instance) {
-          return _this.buildTableLine(instance, attributes, tbody);
+        return instances.forEach(function(instance) {
+          return _this.buildTableLine(instance, tbody);
         });
       } else {
         return table.append("There are not instances");
       }
     };
 
-    TableClassListingWidget.prototype.buildTableLine = function(instance, attributes, tbody) {
-      var i, trbody,
+    TableClassListingWidget.prototype.buildTableLine = function(instance, tbody) {
+      var trbody,
         _this = this;
       trbody = $("<tr>");
       trbody.attr("id", "instance_" + instance.id);
       tbody.append(trbody);
-      i = 0;
-      attributes.forEach(function(attribute) {
-        var td, v;
+      instance.values.forEach(function(attributeValue) {
+        var td;
         td = $("<td>");
-        td.attr("id", "instance_" + instance.id + "_attribute_" + attribute.id);
-        if (i < instance.values.length) {
-          v = instance.values[i];
-          if (attribute.id === v.attribute.id) {
-            td.append(v.value);
-            i++;
-          }
-        }
+        td.attr("id", "instance_" + instance.id + "_attribute_" + attributeValue.attribute.id);
+        td.append(attributeValue.value);
         return trbody.append(td);
       });
       return trbody.click(function() {
         return LOM.loadScript('api/widget/class/' + instance.clazz.fullName + '/edit', {
-          classFullName: classFullName,
+          classFullName: instance.clazz.fullName,
           id: instance.id
         });
       });
