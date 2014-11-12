@@ -64,8 +64,10 @@
         var td;
         td = $("<td>");
         td.attr("id", "instance_" + instance.id + "_attribute_" + attributeValue.attribute.id);
-        td.append(attributeValue.value);
-        return trbody.append(td);
+        trbody.append(td);
+        return LOM.loadScript('api/widget/class/' + instance.clazz.fullName + '/' + attributeValue.attribute.name, td, {
+          data: attributeValue.value
+        });
       });
       return trbody.click(function() {
         return LOM.loadScript('api/widget/class/' + instance.clazz.fullName + '/edit', {

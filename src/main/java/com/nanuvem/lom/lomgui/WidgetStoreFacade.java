@@ -34,11 +34,18 @@ public class WidgetStoreFacade {
 		addWidget(defaultRootWidget);
 		Widget widgetRootUl = new Widget("UlRootWidget", "UlRootWidget");
 		addWidget(widgetRootUl);
-		Widget defaultClassWidget = new Widget("TableClassListingWidget", "TableClassListingWidget");
-		addWidget(defaultClassWidget);
+		Widget defaultClassListingWidget = new Widget("TableClassListingWidget", "TableClassListingWidget");
+		addWidget(defaultClassListingWidget);
+		Widget simpleClassListingWidget = new Widget("SimpleClassListingWidget", "SimpleClassListingWidget");
+		addWidget(simpleClassListingWidget);
+		Widget defaultAttributeWidget = new Widget("DefaultAttributeWidget", "DefaultAttributeWidget");
+		addWidget(defaultAttributeWidget);
+		Widget passwordAttributeWidget = new Widget("PasswordAttributeWidget", "PasswordAttributeWidget");
+		addWidget(passwordAttributeWidget);
 		
 		setWidgetToTarget("root", defaultRootWidget);
-		setWidgetToTarget("class", defaultClassWidget);
+		setWidgetToTarget("class", defaultClassListingWidget);
+		setWidgetToTarget("attribute", defaultAttributeWidget);
 	}
 
 	private void addWidget(Widget widget){

@@ -36,7 +36,7 @@ public class LomBusinessFacade {
 		classService = serviceFactory.getClassService();
 		attributeService = serviceFactory.getAttributeService();
 		instanceService = serviceFactory.getInstanceService();
-		mock();
+//		mock();
 	}
 
 	private void mock() {

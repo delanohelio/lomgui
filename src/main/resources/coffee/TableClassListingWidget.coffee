@@ -40,8 +40,9 @@ class TableClassListingWidget
 		instance.values.forEach (attributeValue) =>
 			td  = $("<td>");
 			td.attr "id", "instance_" + instance.id + "_attribute_" + attributeValue.attribute.id
-			td.append attributeValue.value
 			trbody.append td
+			LOM.loadScript 'api/widget/class/' + instance.clazz.fullName + '/' + attributeValue.attribute.name, td,
+				data: attributeValue.value
 		trbody.click => 
 			LOM.loadScript 'api/widget/class/' + instance.clazz.fullName + '/edit',
 				classFullName: instance.clazz.fullName
