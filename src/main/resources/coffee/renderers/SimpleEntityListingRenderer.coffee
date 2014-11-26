@@ -1,7 +1,7 @@
-class SimpleClassListingWidget
+class TableEntityListingRenderer
 
 	init: (view, conf) ->
-		LOM.getJSON "api/data/class/#{conf.classFullName}/instances", (instances) =>
+		LOM.getJSON "api/data/entity/#{conf.entityFullName}/instances", (instances) =>
 			@buildTableBody(instances, view)
 
 	buildTableBody: (instances, view) ->
@@ -21,8 +21,8 @@ class SimpleClassListingWidget
 			par.append attributeValue.value
 			separator = ","
 		par.click => 
-			LOM.loadScript 'api/widget/class/' + instance.clazz.fullName + '/edit',
-				classFullName: instance.clazz.fullName
+			LOM.loadScript 'api/widget/entity/' + instance.entity.fullName + '/edit',
+				entityFullName: instance.entity.fullName
 				id: instance.id
 
-return new SimpleClassListingWidget
+return new TableEntityListingRenderer

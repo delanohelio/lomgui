@@ -30,22 +30,22 @@ public class WidgetStoreFacade {
 	}
 	
 	private void mock() {
-		Widget defaultRootWidget = new Widget("TableRootWidget", "TableRootWidget");
-		addWidget(defaultRootWidget);
-		Widget widgetRootUl = new Widget("UlRootWidget", "UlRootWidget");
-		addWidget(widgetRootUl);
-		Widget defaultClassListingWidget = new Widget("TableClassListingWidget", "TableClassListingWidget");
-		addWidget(defaultClassListingWidget);
-		Widget simpleClassListingWidget = new Widget("SimpleClassListingWidget", "SimpleClassListingWidget");
-		addWidget(simpleClassListingWidget);
-		Widget defaultAttributeWidget = new Widget("DefaultAttributeWidget", "DefaultAttributeWidget");
-		addWidget(defaultAttributeWidget);
-		Widget passwordAttributeWidget = new Widget("PasswordAttributeWidget", "PasswordAttributeWidget");
-		addWidget(passwordAttributeWidget);
+		Widget defaultRootRenderer = new Widget("TableRootRenderer", "TableRootRenderer");
+		addWidget(defaultRootRenderer);
+		Widget ulRootRenderer = new Widget("UlRootRenderer", "UlRootRenderer");
+		addWidget(ulRootRenderer);
+		Widget defaultEntityListingRenderer = new Widget("TableEntityListingRenderer", "TableEntityListingRenderer");
+		addWidget(defaultEntityListingRenderer);
+		Widget simpleEntityListingRenderer = new Widget("SimpleEntityListingRenderer", "SimpleEntityListingRenderer");
+		addWidget(simpleEntityListingRenderer);
+		Widget defaultAttributeRenderer = new Widget("DefaultAttributeRenderer", "DefaultAttributeRenderer");
+		addWidget(defaultAttributeRenderer);
+		Widget passwordAttributeRenderer = new Widget("PasswordAttributeRenderer", "PasswordAttributeRenderer");
+		addWidget(passwordAttributeRenderer);
 		
-		setWidgetToTarget("root", defaultRootWidget);
-		setWidgetToTarget("class", defaultClassListingWidget);
-		setWidgetToTarget("attribute", defaultAttributeWidget);
+		setWidgetToTarget("root", defaultRootRenderer);
+		setWidgetToTarget("entity", defaultEntityListingRenderer);
+		setWidgetToTarget("attribute", defaultAttributeRenderer);
 	}
 
 	private void addWidget(Widget widget){

@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.nanuvem.lom.kernel.Attribute;
+import com.nanuvem.lom.api.Attribute;
 import com.nanuvem.restest.TypedSubResource;
 
 public class AttributeResource extends TypedSubResource<Attribute> {
 
-	private static final String ROOTURL = "http://localhost:8080/lomgui/api/data/class";
+	private static final String ROOTURL = "http://localhost:8080/lomgui/api/data/entity";
 	private static final String ATTRIBUTESURL = "attributes";
 	private Gson gson;
 

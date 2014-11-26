@@ -1,19 +1,17 @@
 package com.nanuvem.lom.lomgui.business;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.nanuvem.lom.kernel.Attribute;
-import com.nanuvem.lom.kernel.AttributeServiceImpl;
-import com.nanuvem.lom.kernel.AttributeType;
-import com.nanuvem.lom.kernel.AttributeValue;
-import com.nanuvem.lom.kernel.Class;
-import com.nanuvem.lom.kernel.ClassServiceImpl;
-import com.nanuvem.lom.kernel.Instance;
-import com.nanuvem.lom.kernel.InstanceServiceImpl;
-import com.nanuvem.lom.kernel.ServiceFactory;
-import com.nanuvem.lom.kernel.dao.memory.MemoryDaoFactory;
+import com.nanuvem.lom.api.Attribute;
+import com.nanuvem.lom.api.AttributeValue;
+import com.nanuvem.lom.api.Entity;
+import com.nanuvem.lom.api.Facade;
+import com.nanuvem.lom.api.Instance;
+import com.nanuvem.lom.kernel.KernelFacade;
+import com.nanuvem.lom.kernel.dao.MemoryDaoFactory;
 
 public class LomBusinessFacade {
 
@@ -26,88 +24,53 @@ public class LomBusinessFacade {
 		return LomBusinessFacade.singleton;
 	}
 
-	private ClassServiceImpl classService;
-	private AttributeServiceImpl attributeService;
-	private InstanceServiceImpl instanceService;
+	private Facade facade;
 
 	private LomBusinessFacade() {
-		ServiceFactory serviceFactory = new ServiceFactory(
-				new MemoryDaoFactory());
-		classService = serviceFactory.getClassService();
-		attributeService = serviceFactory.getAttributeService();
-		instanceService = serviceFactory.getInstanceService();
-//		mock();
+		facade = new KernelFacade(new MemoryDaoFactory());
 	}
 
-	private void mock() {
-		Class aClass = new Class();
-		aClass.setNamespace("test");
-		aClass.setName("Product");
-		addClass(aClass);
-
-		Attribute attributeName = new Attribute();
-		attributeName.setClazz(aClass);
-		attributeName.setName("name");
-		attributeName.setType(AttributeType.TEXT);
-		addAttribute(attributeName);
-
+	public Entity addEntity(Entity clazz) {
+		facade.create(clazz);
+		return getEntity(clazz.getFullName());
 	}
 
-	public Class addClass(Class clazz) {
-		classService.create(clazz);
-		return getClass(clazz.getFullName());
+	public Entity getEntity(String fullname) {
+		return facade.findEntityByFullName(fullname);
 	}
 
-	public Class getClass(String fullname) {
-		return classService.readClass(fullname);
+	public Entity getEntity(Long id) {
+		return facade.findEntityById(id);
 	}
 
-	public Class getClass(Long id) {
-		return classService.findClassById(id);
+	public Collection<Entity> getAllEntityes() {
+		return facade.listAllEntities();
 	}
 
-	public Collection<Class> getAllClasses() {
-		return classService.listAll();
-	}
-
-	public boolean removeClass(String fullname) {
-		Class clazz = getClass(fullname);
-		if (clazz != null) {
-			classService.delete(clazz);
-			return true;
-		}
-		return false;
-	}
-
-	public boolean removeClass(Long id) {
-		Class clazz = getClass(id);
-		if (clazz != null) {
-			classService.delete(clazz);
-			return true;
-		}
-		return false;
+	public void removeEntity(Long id) {
+		facade.deleteEntity(id);
 	}
 
 	public Attribute addAttribute(Attribute attribute) {
-		attributeService.create(attribute);
-		return attributeService.findAttributeByNameAndClassFullName(
-				attribute.getName(), attribute.getClazz().getFullName());
+		facade.create(attribute);
+		return facade.findAttributeByNameAndEntityFullName(
+				attribute.getName(), attribute.getEntity().getFullName());
 	}
 
 	public Attribute getAttribute(Long id) {
-		return attributeService.findAttributeById(id);
+		return facade.findAttributeById(id);
 	}
 
-	public List<Attribute> getAttributesByClassId(Long classId) {
-		return getClass(classId).getAttributes();
+	public List<Attribute> getAttributesByEntityId(Long classId) {
+		return getEntity(classId).getAttributes();
 	}
 	
-	public List<Attribute> getAttributesByClassFullName(String classFullName) {
-		return getClass(classFullName).getAttributes();
+	public List<Attribute> getAttributesByEntityFullName(String classFullName) {
+		return getEntity(classFullName).getAttributes();
 	}
 	
 	public Attribute updateAttribute(Attribute attribute) {
-		return attributeService.update(attribute);
+		return facade.update(attribute);
 	}
 
 	public boolean removeAttribute(Long id) {
@@ -117,20 +80,19 @@ public class LomBusinessFacade {
 
 	public Instance addInstance(Instance instance) {
 		completeInstance(instance);
-		instanceService.create(instance);
-		return instance;
+		return facade.create(instance);
 	}
 
 	public Instance getInstance(Long id) {
-		return instanceService.findInstanceById(id);
+		return facade.findInstanceById(id);
 	}
 
-	public List<Instance> getInstancesByClassID(Long classID) {
-		return getClass(classID).getInstances();
+	public List<Instance> getInstancesByEntityID(Long classID) {
+		return getEntity(classID).getInstances();
 	}
 	
-	public List<Instance> getInstancesByClassFullName(String classFullName) {
-		return getClass(classFullName).getInstances();
+	public List<Instance> getInstancesByEntityFullName(String classFullName) {
+		return getEntity(classFullName).getInstances();
 	}
 	
 	public Instance updateInstance(Instance instance) {
@@ -144,7 +106,7 @@ public class LomBusinessFacade {
 	}
 	
 	private void completeInstance(Instance instance) {
-		List<Attribute> attributes = instance.getClazz().getAttributes();
+		List<Attribute> attributes = instance.getEntity().getAttributes();
 		AttributeValue[] attributesValues = new AttributeValue[attributes.size()];
 		for(AttributeValue attributeValue : instance.getValues()){
 			attributes.remove(attributeValue.getAttribute());
@@ -155,7 +117,7 @@ public class LomBusinessFacade {
 			attributeValue.setAttribute(attribute);
 			attributesValues[attributeValue.getAttribute().getSequence()-1] =  attributeValue;
 		}
-		instance.setValues(Arrays.asList(attributesValues));
+		instance.setValues(new ArrayList<AttributeValue>(Arrays.asList(attributesValues)));
 	}
 
 

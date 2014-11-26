@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>2.43.1</version>
+			<version>2.44.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.nanuvem</groupId>
@@ -86,12 +86,17 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
+			<version>2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.nanuvem.lom</groupId>
 			<artifactId>kernel</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nanuvem.lom.dao</groupId>
+			<artifactId>memory</artifactId>
+			<version>0.0.4</version>
 		</dependency>
 	</dependencies>
 	<properties>

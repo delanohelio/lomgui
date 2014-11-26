@@ -13,71 +13,71 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.nanuvem.lom.kernel.Class;
-import com.nanuvem.lom.lomgui.resources.ClassResource;
+import com.nanuvem.lom.api.Entity;
+import com.nanuvem.lom.lomgui.resources.EntityResource;
 import com.nanuvem.lom.lomgui.resources.Widget;
 import com.nanuvem.lom.lomgui.resources.WidgetResource;
 
-public class RootWidgetTest {
+public class RootRenderersTest {
 
 	private static final int DEFAULT_TIMEOUT = 10;
 	private static WebDriver driver;
 
-	private static ClassResource clazzResource;
-	private static Class clazz;
+	private static EntityResource entityResource;
+	private static Entity entity;
 	private static WidgetResource rootWidgetResource;
 	
-	private final String idClasses = "classes";
+	private final String idEntities = "entities";
 
 	@BeforeClass
 	public static void setUp() throws ParseException, IOException {
 		driver = new FirefoxDriver();
-		clazzResource = new ClassResource();
+		entityResource = new EntityResource();
 		rootWidgetResource = new WidgetResource("root");
 
-		clazz = new Class();
-		clazz.setNamespace("test");
-		clazz.setName("Client");
-		clazz = clazzResource.toObject(clazzResource.post(clazz));
+		entity = new Entity();
+		entity.setNamespace("test");
+		entity.setName("Client");
+		entity = entityResource.toObject(entityResource.post(entity));
 	}
 
 	@AfterClass
 	public static void tearDown() {
 		driver.close();
-		clazzResource.delete(clazz.getId().toString());
+		entityResource.delete(entity.getId().toString());
 	}
 
 	@Test
 	public void scenarioTableRootWidget() throws Exception {
-		setRootWidget("TableRootWidget");
+		setRootWidget("TableRootRenderer");
 		driver.get("http://localhost:8080/lomgui/");
 		
 		WebElement tableElement = ElementHelper.waitAndFindElementById(driver,
-				idClasses, DEFAULT_TIMEOUT);
+				idEntities, DEFAULT_TIMEOUT);
 		assertNotNull("Table Element not found", tableElement);
 		assertEquals("tr", tableElement.getTagName());
 		
-		String idName = "class_" + clazz.getFullName();
+		String idName = "entity_" + entity.getFullName();
 		WebElement client = ElementHelper.waitAndFindElementById(driver,
 				idName, DEFAULT_TIMEOUT);
-		assertEquals(clazz.getName(), client.getText());
+		assertEquals(entity.getName(), client.getText());
 	}
 
 	@Test
 	public void scenarioUlRootWidget() throws Exception {
-		setRootWidget("UlRootWidget");
+		setRootWidget("UlRootRenderer");
 
 		driver.get("http://localhost:8080/lomgui/");
 		WebElement ulElement = ElementHelper.waitAndFindElementById(driver,
-				idClasses, DEFAULT_TIMEOUT);
+				idEntities, DEFAULT_TIMEOUT);
 
 		assertNotNull("Ul Element not found", ulElement);
 		assertEquals("ul", ulElement.getTagName());
 		
-		String idName = "class_" + clazz.getFullName();
+		String idName = "entity_" + entity.getFullName();
 		WebElement client = ElementHelper.waitAndFindElementById(driver,
 				idName, DEFAULT_TIMEOUT);
-		assertEquals(clazz.getName(), client.getText());
+		assertEquals(entity.getName(), client.getText());
 	}
 
 	private void setRootWidget(String widgetName) {

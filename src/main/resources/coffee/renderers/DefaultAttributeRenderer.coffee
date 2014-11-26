@@ -1,6 +1,6 @@
-class DefaultAttributeWidget
+class DefaultAttributeRenderer
 
     init: (view, conf) ->
         view.append conf.data
         
-return new DefaultAttributeWidget
+return new DefaultAttributeRenderer

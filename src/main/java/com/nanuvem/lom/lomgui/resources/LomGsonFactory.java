@@ -3,29 +3,30 @@ package com.nanuvem.lom.lomgui.resources;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.nanuvem.lom.kernel.AttributeValue;
+import com.nanuvem.lom.api.AttributeValue;
+import com.nanuvem.lom.api.Entity;
 
 public class LomGsonFactory {
 
-	private Gson classGson;
+	private Gson entityGson;
 	private Gson attributeGson;
 	private Gson instanceGson;
 	private Gson simpleInstanceGson;
 
-	public Gson getClassGson() {
-		if (classGson == null) {
-			classGson = new GsonBuilder().registerTypeAdapter(
-					com.nanuvem.lom.kernel.Class.class, new ClassSerializer())
+	public Gson getEntityGson() {
+		if (entityGson == null) {
+			entityGson = new GsonBuilder().registerTypeAdapter(
+					Entity.class, new EntitySerializer())
 					.create();
 		}
-		return classGson;
+		return entityGson;
 	}
 
 	public Gson getAttributeGson() {
 		if (attributeGson == null) {
 			attributeGson = new GsonBuilder()
-					.registerTypeAdapter(com.nanuvem.lom.kernel.Class.class,
-							new ClassSerializer()).serializeNulls().create();
+					.registerTypeAdapter(Entity.class,
+							new EntitySerializer()).serializeNulls().create();
 		}
 		return attributeGson;
 	}
@@ -33,8 +34,8 @@ public class LomGsonFactory {
 	public Gson getInstanceGson() {
 		if (instanceGson == null) {
 			instanceGson = new GsonBuilder()
-					.registerTypeAdapter(com.nanuvem.lom.kernel.Class.class,
-							new ClassSerializer())
+					.registerTypeAdapter(Entity.class,
+							new EntitySerializer())
 					.registerTypeAdapter(AttributeValue.class,
 							new AttributeValueSerializer()).create();
 		}
@@ -44,14 +45,14 @@ public class LomGsonFactory {
 	public Gson getSimpleInstanceGson() {
 		if (simpleInstanceGson == null) {
 			simpleInstanceGson = new GsonBuilder()
-					.registerTypeAdapter(com.nanuvem.lom.kernel.Class.class,
-							new ClassSerializer())
+					.registerTypeAdapter(Entity.class,
+							new EntitySerializer())
 					.registerTypeAdapter(
 							AttributeValue.class,
 							new AttributeValueSerializer(
 									new AttributesExclusionStrategy(
 											ImmutableSet
-													.of("instance", "clazz"))))
+													.of("instance", "entity"))))
 					.create();
 		}
 		return simpleInstanceGson;

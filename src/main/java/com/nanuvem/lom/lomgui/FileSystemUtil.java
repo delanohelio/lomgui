@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public class FileSystemUtil {
 
-	static String getWidgetScript(HttpServletRequest servletRequest, String filename) {
+	static String getWidgetScript(HttpServletRequest servletRequest, String type, String filename) {
 		StringBuilder result = new StringBuilder();
-		String filepath = mountFilePath(servletRequest, filename);
+		String filepath = mountFilePath(servletRequest, type, filename);
 		BufferedReader in = null;
 		FileReader fileReader = null;
 
@@ -37,10 +37,10 @@ public class FileSystemUtil {
 	}
 
 
-	static String mountFilePath(HttpServletRequest servletRequest, String filename) {
+	static String mountFilePath(HttpServletRequest servletRequest, String type, String filename) {
 		String filepath =
 				servletRequest.getSession().getServletContext().getRealPath("/") + java.io.File.separator + "js"
-						+ java.io.File.separator + filename + ".js";
+						+ java.io.File.separator + type + java.io.File.separator + filename + ".js";
 		return filepath;
 	}
 

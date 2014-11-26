@@ -1,30 +1,30 @@
 (function() {
-  var TableClassListingWidget;
+  var TableEntityListingWidget;
 
-  TableClassListingWidget = (function() {
+  TableEntityListingWidget = (function() {
 
-    function TableClassListingWidget() {}
+    function TableEntityListingWidget() {}
 
-    TableClassListingWidget.prototype.init = function(view, conf) {
+    TableEntityListingWidget.prototype.init = function(view, conf) {
       var _this = this;
-      return LOM.getJSON("api/data/class/" + conf.classFullName + "/attributes", function(attributes) {
-        return _this.drawTable(attributes, conf.classFullName, view);
+      return LOM.getJSON("api/data/entity/" + conf.entityFullName + "/attributes", function(attributes) {
+        return _this.drawTable(attributes, conf.entityFullName, view);
       });
     };
 
-    TableClassListingWidget.prototype.drawTable = function(attributes, classFullName, view) {
+    TableEntityListingWidget.prototype.drawTable = function(attributes, entityFullName, view) {
       var table,
         _this = this;
       this.page = view;
       table = $("<table>");
       this.page.append(table);
       this.buildTableHead(attributes, table);
-      return LOM.getJSON("api/data/class/" + classFullName + "/instances", function(instances) {
+      return LOM.getJSON("api/data/entity/" + entityFullName + "/instances", function(instances) {
         return _this.buildTableBody(instances, table);
       });
     };
 
-    TableClassListingWidget.prototype.buildTableHead = function(attributes, table) {
+    TableEntityListingWidget.prototype.buildTableHead = function(attributes, table) {
       var thead, trHead;
       thead = $("<thead>");
       table.append(thead);
@@ -39,7 +39,7 @@
       });
     };
 
-    TableClassListingWidget.prototype.buildTableBody = function(instances, table) {
+    TableEntityListingWidget.prototype.buildTableBody = function(instances, table) {
       var tbody,
         _this = this;
       if (instances.length > 0) {
@@ -54,7 +54,7 @@
       }
     };
 
-    TableClassListingWidget.prototype.buildTableLine = function(instance, tbody) {
+    TableEntityListingWidget.prototype.buildTableLine = function(instance, tbody) {
       var trbody,
         _this = this;
       trbody = $("<tr>");
@@ -65,22 +65,22 @@
         td = $("<td>");
         td.attr("id", "instance_" + instance.id + "_attribute_" + attributeValue.attribute.id);
         trbody.append(td);
-        return LOM.loadScript('api/widget/class/' + instance.clazz.fullName + '/' + attributeValue.attribute.name, td, {
+        return LOM.loadScript('api/widget/entity/' + instance.entity.fullName + '/' + attributeValue.attribute.name, td, {
           data: attributeValue.value
         });
       });
       return trbody.click(function() {
-        return LOM.loadScript('api/widget/class/' + instance.clazz.fullName + '/edit', {
-          classFullName: instance.clazz.fullName,
+        return LOM.loadScript('api/widget/entity/' + instance.entity.fullName + '/edit', {
+          entityFullName: instance.entity.fullName,
           id: instance.id
         });
       });
     };
 
-    return TableClassListingWidget;
+    return TableEntityListingWidget;
 
   })();
 
-  return new TableClassListingWidget;
+  return new TableEntityListingWidget;
 
 }).call(this);

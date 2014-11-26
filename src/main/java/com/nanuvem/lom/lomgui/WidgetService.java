@@ -26,7 +26,7 @@ public class WidgetService {
 
 		String widgetFilename = WidgetStoreFacade.getInstance()
 				.getWidgetFromTarget("root").getFilename();
-		String result = FileSystemUtil.getWidgetScript(servletRequest,
+		String result = FileSystemUtil.getWidgetScript(servletRequest, "renderers",
 				widgetFilename);
 		return Response.ok(result).build();
 	}
@@ -49,17 +49,17 @@ public class WidgetService {
 
 	@GET
 	@Produces("text/plain; charset=utf-8")
-	@Path("/class")
+	@Path("/entity")
 	public Response getDefaultClassWidget() {
 		Widget widget = WidgetStoreFacade.getInstance().getWidgetFromTarget(
-				"class");
-		String result = FileSystemUtil.getWidgetScript(servletRequest,
+				"entity");
+		String result = FileSystemUtil.getWidgetScript(servletRequest, "renderers",
 				widget.getFilename());
 		return Response.ok(result).build();
 	}
 
 	@POST
-	@Path("/class")
+	@Path("/entity")
 	public Response setDefaultClassWidget(String json, @Context UriInfo uriInfo) {
 		try {
 			Gson gson = new Gson();
@@ -75,21 +75,21 @@ public class WidgetService {
 
 	@GET
 	@Produces("text/plain; charset=utf-8")
-	@Path("/class/{fullName}")
+	@Path("/entity/{fullName}")
 	public Response getClassWidget(@PathParam("fullName") String fullName) {
 		Widget widget = WidgetStoreFacade.getInstance().getWidgetFromTarget(
-				"class." + fullName);
+				"entity." + fullName);
 		if (widget == null) {
 			widget = WidgetStoreFacade.getInstance().getWidgetFromTarget(
-					"class");
+					"entity");
 		}
-		String result = FileSystemUtil.getWidgetScript(servletRequest,
+		String result = FileSystemUtil.getWidgetScript(servletRequest, "renderers",
 				widget.getFilename());
 		return Response.ok(result).build();
 	}
 
 	@POST
-	@Path("/class/{fullName}")
+	@Path("/entity/{fullName}")
 	public Response setClassWidget(@PathParam("fullName") String fullName,
 			String json, @Context UriInfo uriInfo) {
 		try {
@@ -106,22 +106,22 @@ public class WidgetService {
 
 	@GET
 	@Produces("text/plain; charset=utf-8")
-	@Path("/class/{fullName}/{attributeName}")
+	@Path("/entity/{fullName}/{attributeName}")
 	public Response getAttributeWidget(@PathParam("fullName") String fullName,
 			@PathParam("attributeName") String attributeName) {
 		Widget widget = WidgetStoreFacade.getInstance().getWidgetFromTarget(
-				"class." + fullName + "." + attributeName);
+				"entity." + fullName + "." + attributeName);
 		if (widget == null) {
 			widget = WidgetStoreFacade.getInstance().getWidgetFromTarget(
 					"attribute");
 		}
-		String result = FileSystemUtil.getWidgetScript(servletRequest,
+		String result = FileSystemUtil.getWidgetScript(servletRequest, "renderers",
 				widget.getFilename());
 		return Response.ok(result).build();
 	}
 
 	@POST
-	@Path("/class/{fullName}/{attributeName}")
+	@Path("/entity/{fullName}/{attributeName}")
 	public Response setAttributeWidget(@PathParam("fullName") String fullName,
 			@PathParam("attributeName") String attributeName, String json,
 			@Context UriInfo uriInfo) {
@@ -148,9 +148,9 @@ public class WidgetService {
 			target = "root";
 		}
 
-		else if (pathComponents[1].equals("class")) {
+		else if (pathComponents[1].equals("entity")) {
 
-			target = "class";
+			target = "entity";
 
 			if (pathComponents.length >= 3) {
 				target += "." + pathComponents[2];

@@ -8,7 +8,7 @@
     TableRootWidget.prototype.init = function(view, conf) {
       var _this = this;
       this.page = view;
-      return LOM.getJSON('api/data/class', function(jsonObj) {
+      return LOM.getJSON('api/data/entity', function(jsonObj) {
         return _this.drawTable(jsonObj);
       });
     };
@@ -17,24 +17,24 @@
       var table, th,
         _this = this;
       table = $("<table>");
-      th = $("<tr><th>Classes</th></tr>");
-      th.attr("id", "classes");
+      th = $("<tr><th>Entities</th></tr>");
+      th.attr("id", "entities");
       table.append(th);
       this.page.append(table);
-      return $.each(jsonObj, function(i, clazz) {
-        return _this.drawLine(table, clazz);
+      return jsonObj.forEach(function(entity) {
+        return _this.drawLine(table, entity);
       });
     };
 
-    TableRootWidget.prototype.drawLine = function(table, clazz) {
+    TableRootWidget.prototype.drawLine = function(table, entity) {
       var tr,
         _this = this;
-      tr = $("<tr><td>" + clazz.name + "</td></tr>");
-      tr.attr("id", "class_" + clazz.fullName);
+      tr = $("<tr><td>" + entity.name + "</td></tr>");
+      tr.attr("id", "entity_" + entity.fullName);
       table.append(tr);
       return tr.click(function() {
-        return LOM.loadScriptInNewView('api/widget/class/' + clazz.fullName, {
-          classFullName: clazz.fullName
+        return LOM.loadScriptInNewView('api/widget/entity/' + entity.fullName, {
+          entityFullName: entity.fullName
         });
       });
     };

@@ -8,7 +8,7 @@
     UlRootWidget.prototype.init = function(view, conf) {
       var _this = this;
       this.page = view;
-      return LOM.getJSON('api/data/class', function(jsonObj) {
+      return LOM.getJSON('api/data/entity', function(jsonObj) {
         return _this.drawList(jsonObj);
       });
     };
@@ -17,22 +17,22 @@
       var ul,
         _this = this;
       ul = $("<ul>");
-      ul.attr("id", "classes");
+      ul.attr("id", "entities");
       this.page.append(ul);
-      return $.each(jsonObj, function(i, clazz) {
-        return _this.drawLine(ul, clazz);
+      return jsonObj.forEach(function(entity) {
+        return _this.drawLine(ul, entity);
       });
     };
 
-    UlRootWidget.prototype.drawLine = function(ul, clazz) {
+    UlRootWidget.prototype.drawLine = function(ul, entity) {
       var li,
         _this = this;
-      li = $("<li>" + clazz.name + "</li>");
-      li.attr("id", "class_" + clazz.fullName);
+      li = $("<li>" + entity.name + "</li>");
+      li.attr("id", "entity_" + entity.fullName);
       ul.append(li);
       return li.click(function() {
-        return LOM.loadScriptInNewView('api/widget/class/' + clazz.fullName, {
-          classFullName: clazz.fullName
+        return LOM.loadScriptInNewView('api/widget/entity/' + entity.fullName, {
+          entityFullName: entity.fullName
         });
       });
     };

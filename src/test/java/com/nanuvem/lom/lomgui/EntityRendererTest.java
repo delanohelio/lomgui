@@ -20,45 +20,45 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.nanuvem.lom.kernel.Attribute;
-import com.nanuvem.lom.kernel.AttributeType;
-import com.nanuvem.lom.kernel.AttributeValue;
-import com.nanuvem.lom.kernel.Class;
-import com.nanuvem.lom.kernel.Instance;
+import com.nanuvem.lom.api.Attribute;
+import com.nanuvem.lom.api.AttributeType;
+import com.nanuvem.lom.api.AttributeValue;
+import com.nanuvem.lom.api.Entity;
+import com.nanuvem.lom.api.Instance;
 import com.nanuvem.lom.lomgui.resources.AttributeResource;
-import com.nanuvem.lom.lomgui.resources.ClassResource;
+import com.nanuvem.lom.lomgui.resources.EntityResource;
 import com.nanuvem.lom.lomgui.resources.InstanceResource;
 import com.nanuvem.lom.lomgui.resources.Widget;
 import com.nanuvem.lom.lomgui.resources.WidgetResource;
 
-public class ClassWidgetTest {
+public class EntityRendererTest {
 
 	private static final int DEFAULT_TIMEOUT = 10;
 	private static WebDriver driver;
 
-	private static ClassResource clazzResource;
+	private static EntityResource entityResource;
 	private static AttributeResource attributeResource;
 	private static InstanceResource instanceResource;
 
-	private static List<Class> classes;
+	private static List<Entity> entities;
 
 	@BeforeClass
 	public static void setUp() throws ParseException, IOException {
 		driver = new FirefoxDriver();
 
-		clazzResource = new ClassResource();
+		entityResource = new EntityResource();
 		attributeResource = new AttributeResource();
 		instanceResource = new InstanceResource();
 
-		classes = new ArrayList<Class>();
+		entities = new ArrayList<Entity>();
 	}
 
 	@AfterClass
 	public static void tearDown() {
 		driver.close();
 
-		for (Class clazz : classes) {
-			clazzResource.delete(clazz.getId().toString());
+		for (Entity entity : entities) {
+			entityResource.delete(entity.getId().toString());
 		}
 
 	}
@@ -66,12 +66,12 @@ public class ClassWidgetTest {
 
 	@Test
 	public void scenarioCheckAddAttributeAndInstance() {
-		Class clazz = createAndAddClass("test", "Client");
+		Entity entity = createAndAddEntity("test", "Client");
 		// Attribute
-		Attribute nameAttribute = createAndAddAttribute(clazz, "name",
+		Attribute nameAttribute = createAndAddAttribute(entity, "name",
 				AttributeType.TEXT);
 
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 
 		String idAttributeName = "attribute_" + nameAttribute.getId();
 		WebElement attributeElement = ElementHelper.waitAndFindElementById(
@@ -84,12 +84,12 @@ public class ClassWidgetTest {
 		// Instance
 
 		String nameValue = "Delano";
-		Map<Attribute, Object> attributesValuesMap = ImmutableMap
-				.<Attribute, Object> builder().put(nameAttribute, nameValue)
+		Map<Attribute, String> attributesValuesMap = ImmutableMap
+				.<Attribute, String> builder().put(nameAttribute, nameValue)
 				.build();
-		Instance nameInstance = createAndAddInstance(clazz, attributesValuesMap);
+		Instance nameInstance = createAndAddInstance(entity, attributesValuesMap);
 
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 
 		String idAttributeValueName = "instance_" + nameInstance.getId()
 				+ "_attribute_" + nameAttribute.getId();
@@ -106,11 +106,11 @@ public class ClassWidgetTest {
 	@Test
 	public void scenarioChangeAttributeAndValue() throws ParseException,
 			IOException {
-		Class clazz = createAndAddClass("test", "Employee");
+		Entity entity = createAndAddEntity("test", "Employee");
 		// Attribute
-		Attribute aAttribute = createAndAddAttribute(clazz, "surname",
+		Attribute aAttribute = createAndAddAttribute(entity, "surname",
 				AttributeType.TEXT);
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 		String idAttribute = "attribute_" + aAttribute.getId();
 		WebElement attributeElement = ElementHelper.waitAndFindElementById(
 				driver, idAttribute, DEFAULT_TIMEOUT);
@@ -120,9 +120,9 @@ public class ClassWidgetTest {
 
 		aAttribute.setName("lastname");
 		aAttribute = attributeResource
-				.toObject(attributeResource.put(clazz.getFullName(), aAttribute
+				.toObject(attributeResource.put(entity.getFullName(), aAttribute
 						.getId().toString(), aAttribute));
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 		attributeElement = ElementHelper.waitAndFindElementById(driver,
 				idAttribute, DEFAULT_TIMEOUT);
 		assertNotNull("Attribute not found: " + aAttribute.getName(),
@@ -134,14 +134,14 @@ public class ClassWidgetTest {
 	}
 
 	@Test
-	public void scenarioChangeAttributeWithWrongClass() throws ParseException,
+	public void scenarioChangeAttributeWithWrongEntity() throws ParseException,
 			IOException {
-		Class clazz = createAndAddClass("test", "Product");
+		Entity entity = createAndAddEntity("test", "Product");
 
 		String attributeName = "quantity";
-		Attribute aAttribute = createAndAddAttribute(clazz, attributeName,
+		Attribute aAttribute = createAndAddAttribute(entity, attributeName,
 				AttributeType.INTEGER);
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 		String idAttribute = "attribute_" + aAttribute.getId();
 		WebElement attributeElement = ElementHelper.waitAndFindElementById(
 				driver, idAttribute, DEFAULT_TIMEOUT);
@@ -151,10 +151,10 @@ public class ClassWidgetTest {
 
 		String editedAttributeName = "quant";
 		aAttribute.setName(editedAttributeName);
-		Class wrongClass = createAndAddClass("test", "Order");
-		attributeResource.put(wrongClass.getFullName(), aAttribute.getId()
+		Entity wrongEntity = createAndAddEntity("test", "Order");
+		attributeResource.put(wrongEntity.getFullName(), aAttribute.getId()
 				.toString(), aAttribute);
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 		attributeElement = ElementHelper.waitAndFindElementById(driver,
 				idAttribute, DEFAULT_TIMEOUT);
 		assertNotNull("Attribute not found: " + aAttribute.getName(),
@@ -164,29 +164,29 @@ public class ClassWidgetTest {
 	}
 
 	@Test
-	public void scenarioChangeClassWidget() {
-		Class clazz = createAndAddClass("test", "Foo");
+	public void scenarioChangeEntityWidget() {
+		Entity entity = createAndAddEntity("test", "Foo");
 
-		setWidget("SimpleClassListingWidget", "class", clazz.getFullName());
+		setWidget("SimpleEntityListingRenderer", "entity", entity.getFullName());
 
-		Attribute attribute = createAndAddAttribute(clazz, "FooAttribute",
+		Attribute attribute = createAndAddAttribute(entity, "FooAttribute",
 				AttributeType.TEXT);
-		Map<Attribute, Object> attributesValuesMap = ImmutableMap
-				.<Attribute, Object> builder().put(attribute, "FooValue")
+		Map<Attribute, String> attributesValuesMap = ImmutableMap
+				.<Attribute, String> builder().put(attribute, "FooValue")
 				.build();
-		Instance instance = createAndAddInstance(clazz, attributesValuesMap);
+		Instance instance = createAndAddInstance(entity, attributesValuesMap);
 
 		String idInstance = "instance_" + instance.getId();
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 		WebElement instanceElement = ElementHelper.waitAndFindElementById(
 				driver, idInstance, DEFAULT_TIMEOUT);
 		assertNotNull("Instance not found: " + instance.getId(),
 				instanceElement);
 		assertEquals("p", instanceElement.getTagName());
 
-		setWidget("TableClassListingWidget", "class", clazz.getFullName());
+		setWidget("TableEntityListingRenderer", "entity", entity.getFullName());
 
-		accessClassWidget(clazz);
+		accessEntityWidget(entity);
 		instanceElement = ElementHelper.waitAndFindElementById(driver,
 				idInstance, DEFAULT_TIMEOUT);
 		assertNotNull("Instance not found: " + instance.getId(),
@@ -197,22 +197,22 @@ public class ClassWidgetTest {
 
 	@Test
 	public void scenarioChangeAttributeWidget() {
-		Class clazz = createAndAddClass("test", "User");
+		Entity entity = createAndAddEntity("test", "User");
 
-		Attribute attribute = createAndAddAttribute(clazz, "Password",
+		Attribute attribute = createAndAddAttribute(entity, "Password",
 				AttributeType.PASSWORD);
 		
 		String attributeValue = "123456";
-		Map<Attribute, Object> attributesValuesMap = ImmutableMap
-				.<Attribute, Object> builder().put(attribute, attributeValue)
+		Map<Attribute, String> attributesValuesMap = ImmutableMap
+				.<Attribute, String> builder().put(attribute, attributeValue)
 				.build();
-		Instance instance = createAndAddInstance(clazz, attributesValuesMap);
+		Instance instance = createAndAddInstance(entity, attributesValuesMap);
 
 		String idAttributeValueName = "instance_" + instance.getId()
 				+ "_attribute_" + attribute.getId();
 		
-		setWidget("PasswordAttributeWidget", "class/"+clazz.getFullName(), attribute.getName());
-		accessClassWidget(clazz);
+		setWidget("PasswordAttributeRenderer", "entity/"+entity.getFullName(), attribute.getName());
+		accessEntityWidget(entity);
 		WebElement attributeValueElement = ElementHelper
 				.waitAndFindElementById(driver, idAttributeValueName,
 						DEFAULT_TIMEOUT);
@@ -222,38 +222,38 @@ public class ClassWidgetTest {
 		
 	}
 
-	private void accessClassWidget(Class clazz) {
+	private void accessEntityWidget(Entity entity) {
 		driver.get("http://localhost:8080/lomgui/");
 
-		String idClass = "class_" + clazz.getFullName();
+		String idEntity = "entity_" + entity.getFullName();
 		WebElement clientLi = ElementHelper.waitAndFindElementById(driver,
-				idClass, DEFAULT_TIMEOUT);
+				idEntity, DEFAULT_TIMEOUT);
 		clientLi.click();
 	}
 
-	private Class createAndAddClass(String nameSpace, String name) {
-		Class clazz = new Class();
-		clazz.setNamespace(nameSpace);
-		clazz.setName(name);
+	private Entity createAndAddEntity(String nameSpace, String name) {
+		Entity entity = new Entity();
+		entity.setNamespace(nameSpace);
+		entity.setName(name);
 		try {
-			HttpResponse response = clazzResource.post(clazz);
+			HttpResponse response = entityResource.post(entity);
 			assertEquals(201, response.getStatusLine().getStatusCode());
-			clazz = clazzResource.toObject(response);
-			classes.add(clazz);
-			return clazz;
+			entity = entityResource.toObject(response);
+			entities.add(entity);
+			return entity;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private Attribute createAndAddAttribute(Class clazz, String name,
+	private Attribute createAndAddAttribute(Entity entity, String name,
 			AttributeType type) {
 		Attribute attribute = new Attribute();
 		attribute.setName(name);
 		attribute.setType(type);
 		try {
-			HttpResponse response = attributeResource.post(clazz.getFullName(),
+			HttpResponse response = attributeResource.post(entity.getFullName(),
 					attribute);
 			assertEquals(201, response.getStatusLine().getStatusCode());
 			return attributeResource.toObject(response);
@@ -263,14 +263,14 @@ public class ClassWidgetTest {
 		return null;
 	}
 
-	private Instance createAndAddInstance(Class clazz,
-			Map<Attribute, Object> attributesValuesMap) {
+	private Instance createAndAddInstance(Entity entity,
+			Map<Attribute, String> attributesValuesMap) {
 		Instance instance = new Instance();
-		instance.setClazz(clazz);
+		instance.setEntity(entity);
 		instance.setValues(attributesValuesFromMap(attributesValuesMap,
 				instance));
 		try {
-			HttpResponse response = instanceResource.post(clazz.getFullName(),
+			HttpResponse response = instanceResource.post(entity.getFullName(),
 					instance);
 			assertEquals(201, response.getStatusLine().getStatusCode());
 			return instanceResource.toObject(response);
@@ -281,7 +281,7 @@ public class ClassWidgetTest {
 	}
 
 	private List<AttributeValue> attributesValuesFromMap(
-			Map<Attribute, Object> attributesValuesMap, Instance instance) {
+			Map<Attribute, String> attributesValuesMap, Instance instance) {
 		List<AttributeValue> attributesValues = new LinkedList<AttributeValue>();
 		for (Attribute attribute : attributesValuesMap.keySet()) {
 			AttributeValue attributeValue = new AttributeValue();

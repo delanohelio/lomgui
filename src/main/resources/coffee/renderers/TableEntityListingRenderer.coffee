@@ -1,15 +1,15 @@
-class TableClassListingWidget
+class TableEntityListingRenderer
 
 	init: (view, conf) ->
-		LOM.getJSON "api/data/class/#{conf.classFullName}/attributes", (attributes) =>
-			@drawTable(attributes, conf.classFullName, view)
+		LOM.getJSON "api/data/entity/#{conf.entityFullName}/attributes", (attributes) =>
+			@drawTable(attributes, conf.entityFullName, view)
 
-	drawTable: (attributes, classFullName, view) ->
+	drawTable: (attributes, entityFullName, view) ->
 		@page = view
 		table = $("<table>")
 		@page.append table
 		@buildTableHead(attributes, table);
-		LOM.getJSON "api/data/class/#{classFullName}/instances", (instances) =>
+		LOM.getJSON "api/data/entity/#{entityFullName}/instances", (instances) =>
 			@buildTableBody(instances, table)
 
 	buildTableHead: (attributes, table) ->
@@ -41,11 +41,11 @@ class TableClassListingWidget
 			td  = $("<td>");
 			td.attr "id", "instance_" + instance.id + "_attribute_" + attributeValue.attribute.id
 			trbody.append td
-			LOM.loadScript 'api/widget/class/' + instance.clazz.fullName + '/' + attributeValue.attribute.name, td,
+			LOM.loadScript 'api/widget/entity/' + instance.entity.fullName + '/' + attributeValue.attribute.name, td,
 				data: attributeValue.value
 		trbody.click => 
-			LOM.loadScript 'api/widget/class/' + instance.clazz.fullName + '/edit',
-				classFullName: instance.clazz.fullName
+			LOM.loadScript 'api/widget/entity/' + instance.entity.fullName + '/edit',
+				entityFullName: instance.entity.fullName
 				id: instance.id
 
-return new TableClassListingWidget
+return new TableEntityListingRenderer

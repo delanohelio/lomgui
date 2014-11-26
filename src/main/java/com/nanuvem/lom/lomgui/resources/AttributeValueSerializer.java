@@ -8,7 +8,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.nanuvem.lom.kernel.AttributeValue;
+import com.nanuvem.lom.api.AttributeValue;
+import com.nanuvem.lom.api.Entity;
 
 public class AttributeValueSerializer implements JsonSerializer<AttributeValue> {
 
@@ -31,7 +32,7 @@ public class AttributeValueSerializer implements JsonSerializer<AttributeValue> 
 			gsonBuilder.addSerializationExclusionStrategy(exclusionStrategy);
 		}else{
 			gsonBuilder.addSerializationExclusionStrategy(new AttributesExclusionStrategy(ImmutableSet.of("instance")))
-			.registerTypeAdapter(com.nanuvem.lom.kernel.Class.class, new ClassSerializer());
+			.registerTypeAdapter(Entity.class, new EntitySerializer());
 		}
 		return gsonBuilder.create().toJsonTree(attributeValue);
 	}
