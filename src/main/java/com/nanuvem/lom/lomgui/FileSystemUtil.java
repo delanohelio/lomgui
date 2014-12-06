@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class FileSystemUtil {
 
-	static String getWidgetScript(HttpServletRequest servletRequest, String type, String filename) {
+	static String getFileScript(HttpServletRequest servletRequest, String type, String filename) {
 		StringBuilder result = new StringBuilder();
 		String filepath = mountFilePath(servletRequest, type, filename);
 		BufferedReader in = null;

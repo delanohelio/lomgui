@@ -1,48 +1,33 @@
 (function() {
-  var TableRootWidget;
+  var TableRootRenderer,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  TableRootWidget = (function() {
+  TableRootRenderer = (function(_super) {
 
-    function TableRootWidget() {}
+    __extends(TableRootRenderer, _super);
 
-    TableRootWidget.prototype.init = function(view, conf) {
-      var _this = this;
-      this.page = view;
-      return LOM.getJSON('api/data/entity', function(jsonObj) {
-        return _this.drawTable(jsonObj);
-      });
-    };
+    function TableRootRenderer() {
+      return TableRootRenderer.__super__.constructor.apply(this, arguments);
+    }
 
-    TableRootWidget.prototype.drawTable = function(jsonObj) {
-      var table, th,
+    TableRootRenderer.prototype.accept = function(view, context) {
+      var table,
         _this = this;
       table = $("<table>");
-      th = $("<tr><th>Entities</th></tr>");
-      th.attr("id", "entities");
-      table.append(th);
-      this.page.append(table);
-      return jsonObj.forEach(function(entity) {
-        return _this.drawLine(table, entity);
-      });
-    };
-
-    TableRootWidget.prototype.drawLine = function(table, entity) {
-      var tr,
-        _this = this;
-      tr = $("<tr><td>" + entity.name + "</td></tr>");
-      tr.attr("id", "entity_" + entity.fullName);
-      table.append(tr);
-      return tr.click(function() {
-        return LOM.loadScriptInNewView('api/widget/entity/' + entity.fullName, {
-          entityFullName: entity.fullName
+      view.append(table);
+      return GUIManager.getWidget(this, "taskbar", function(widget) {
+        widget.accept(table, context);
+        return GUIManager.getWidget(_this, "menu", function(widget) {
+          return widget.accept(table, context);
         });
       });
     };
 
-    return TableRootWidget;
+    return TableRootRenderer;
 
-  })();
+  })(GUIElement);
 
-  return new TableRootWidget;
+  return new TableRootRenderer;
 
 }).call(this);

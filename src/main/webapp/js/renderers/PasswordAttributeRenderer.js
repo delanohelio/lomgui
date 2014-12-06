@@ -1,18 +1,18 @@
 (function() {
-  var PasswordAttributeWidget;
+  var PasswordAttributeRenderer;
 
-  PasswordAttributeWidget = (function() {
+  PasswordAttributeRenderer = (function() {
 
-    function PasswordAttributeWidget() {}
+    function PasswordAttributeRenderer() {}
 
-    PasswordAttributeWidget.prototype.init = function(view, conf) {};
+    PasswordAttributeRenderer.prototype.init = function(view, conf) {};
 
-    return PasswordAttributeWidget;
+    return PasswordAttributeRenderer;
 
   })();
 
   view.append(Array(conf.data.length + 1).join('*'));
 
-  return new PasswordAttributeWidget;
+  return new PasswordAttributeRenderer;
 
 }).call(this);

@@ -1,18 +1,18 @@
 (function() {
-  var DefaultAttributeWidget;
+  var DefaultAttributeRenderer;
 
-  DefaultAttributeWidget = (function() {
+  DefaultAttributeRenderer = (function() {
 
-    function DefaultAttributeWidget() {}
+    function DefaultAttributeRenderer() {}
 
-    DefaultAttributeWidget.prototype.init = function(view, conf) {
+    DefaultAttributeRenderer.prototype.init = function(view, conf) {
       return view.append(conf.data);
     };
 
-    return DefaultAttributeWidget;
+    return DefaultAttributeRenderer;
 
   })();
 
-  return new DefaultAttributeWidget;
+  return new DefaultAttributeRenderer;
 
 }).call(this);

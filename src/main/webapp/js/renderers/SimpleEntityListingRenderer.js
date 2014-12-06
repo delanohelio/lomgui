@@ -1,18 +1,18 @@
 (function() {
-  var SimpleEntityListingWidget;
+  var TableEntityListingRenderer;
 
-  SimpleEntityListingWidget = (function() {
+  TableEntityListingRenderer = (function() {
 
-    function SimpleEntityListingWidget() {}
+    function TableEntityListingRenderer() {}
 
-    SimpleEntityListingWidget.prototype.init = function(view, conf) {
+    TableEntityListingRenderer.prototype.init = function(view, conf) {
       var _this = this;
       return LOM.getJSON("api/data/entity/" + conf.entityFullName + "/instances", function(instances) {
         return _this.buildTableBody(instances, view);
       });
     };
 
-    SimpleEntityListingWidget.prototype.buildTableBody = function(instances, view) {
+    TableEntityListingRenderer.prototype.buildTableBody = function(instances, view) {
       var _this = this;
       if (instances.length > 0) {
         return instances.forEach(function(instance) {
@@ -23,7 +23,7 @@
       }
     };
 
-    SimpleEntityListingWidget.prototype.buildTableLine = function(instance, view) {
+    TableEntityListingRenderer.prototype.buildTableLine = function(instance, view) {
       var par, separator,
         _this = this;
       par = $("<p>");
@@ -43,10 +43,10 @@
       });
     };
 
-    return SimpleEntityListingWidget;
+    return TableEntityListingRenderer;
 
   })();
 
-  return new SimpleEntityListingWidget;
+  return new TableEntityListingRenderer;
 
 }).call(this);

@@ -1,19 +1,22 @@
 (function() {
-  var UlRootWidget;
+  var UlRootRenderer,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  UlRootWidget = (function() {
+  UlRootRenderer = (function(_super) {
 
-    function UlRootWidget() {}
+    __extends(UlRootRenderer, _super);
 
-    UlRootWidget.prototype.init = function(view, conf) {
-      var _this = this;
+    function UlRootRenderer() {
+      return UlRootRenderer.__super__.constructor.apply(this, arguments);
+    }
+
+    UlRootRenderer.prototype.accept = function(view, context) {
       this.page = view;
-      return LOM.getJSON('api/data/entity', function(jsonObj) {
-        return _this.drawList(jsonObj);
-      });
+      return this.drawList(context.entities);
     };
 
-    UlRootWidget.prototype.drawList = function(jsonObj) {
+    UlRootRenderer.prototype.drawList = function(jsonObj) {
       var ul,
         _this = this;
       ul = $("<ul>");
@@ -24,7 +27,7 @@
       });
     };
 
-    UlRootWidget.prototype.drawLine = function(ul, entity) {
+    UlRootRenderer.prototype.drawLine = function(ul, entity) {
       var li,
         _this = this;
       li = $("<li>" + entity.name + "</li>");
@@ -37,10 +40,10 @@
       });
     };
 
-    return UlRootWidget;
+    return UlRootRenderer;
 
-  })();
+  })(GUIElement);
 
-  return new UlRootWidget;
+  return new UlRootRenderer;
 
 }).call(this);

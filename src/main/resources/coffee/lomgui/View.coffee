@@ -1,6 +1,7 @@
+window.View = {}
 window.LOM = {}
 
-LOM.emptyPage = ->
+View.emptyPage = ->
     body  = $("body")
     body.empty()  
     page = $('<div>')
@@ -19,9 +20,5 @@ LOM.loadScriptInNewView = (url, conf) ->
         x.init LOM.emptyPage(), conf
     , "text"
 
-LOM.getJSON = (url, callback) ->
-    $.getJSON url, (jsonObj) =>
-        callback(jsonObj)
-
 $ -> 
-    LOM.loadScript 'api/widget/root', LOM.emptyPage(), {}
+    Controller.openApp View.emptyPage()

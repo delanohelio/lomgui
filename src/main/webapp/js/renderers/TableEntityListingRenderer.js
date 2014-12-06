@@ -1,18 +1,18 @@
 (function() {
-  var TableEntityListingWidget;
+  var TableEntityListingRenderer;
 
-  TableEntityListingWidget = (function() {
+  TableEntityListingRenderer = (function() {
 
-    function TableEntityListingWidget() {}
+    function TableEntityListingRenderer() {}
 
-    TableEntityListingWidget.prototype.init = function(view, conf) {
+    TableEntityListingRenderer.prototype.init = function(view, conf) {
       var _this = this;
       return LOM.getJSON("api/data/entity/" + conf.entityFullName + "/attributes", function(attributes) {
         return _this.drawTable(attributes, conf.entityFullName, view);
       });
     };
 
-    TableEntityListingWidget.prototype.drawTable = function(attributes, entityFullName, view) {
+    TableEntityListingRenderer.prototype.drawTable = function(attributes, entityFullName, view) {
       var table,
         _this = this;
       this.page = view;
@@ -24,7 +24,7 @@
       });
     };
 
-    TableEntityListingWidget.prototype.buildTableHead = function(attributes, table) {
+    TableEntityListingRenderer.prototype.buildTableHead = function(attributes, table) {
       var thead, trHead;
       thead = $("<thead>");
       table.append(thead);
@@ -39,7 +39,7 @@
       });
     };
 
-    TableEntityListingWidget.prototype.buildTableBody = function(instances, table) {
+    TableEntityListingRenderer.prototype.buildTableBody = function(instances, table) {
       var tbody,
         _this = this;
       if (instances.length > 0) {
@@ -54,7 +54,7 @@
       }
     };
 
-    TableEntityListingWidget.prototype.buildTableLine = function(instance, tbody) {
+    TableEntityListingRenderer.prototype.buildTableLine = function(instance, tbody) {
       var trbody,
         _this = this;
       trbody = $("<tr>");
@@ -77,10 +77,10 @@
       });
     };
 
-    return TableEntityListingWidget;
+    return TableEntityListingRenderer;
 
   })();
 
-  return new TableEntityListingWidget;
+  return new TableEntityListingRenderer;
 
 }).call(this);

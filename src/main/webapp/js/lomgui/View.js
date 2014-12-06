@@ -1,8 +1,10 @@
 (function() {
 
+  window.View = {};
+
   window.LOM = {};
 
-  LOM.emptyPage = function() {
+  View.emptyPage = function() {
     var body, page;
     body = $("body");
     body.empty();
@@ -27,15 +29,8 @@
     }, "text");
   };
 
-  LOM.getJSON = function(url, callback) {
-    var _this = this;
-    return $.getJSON(url, function(jsonObj) {
-      return callback(jsonObj);
-    });
-  };
-
   $(function() {
-    return LOM.loadScript('api/widget/root', LOM.emptyPage(), {});
+    return Controller.openApp(View.emptyPage());
   });
 
 }).call(this);

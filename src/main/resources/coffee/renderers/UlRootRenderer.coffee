@@ -1,9 +1,8 @@
-class UlRootRenderer
+class UlRootRenderer extends GUIElement
 
-    init: (view, conf) ->
+    accept: (view, context) ->
         @page = view
-        LOM.getJSON 'api/data/entity', (jsonObj) =>
-            @drawList(jsonObj)
+        @drawList(context.entities)
 
     drawList: (jsonObj) ->
         ul = $("<ul>")
