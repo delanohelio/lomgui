@@ -1,7 +1,7 @@
-class TableEntityListingRenderer
+class SimpleEntityListingRenderer
 
-	init: (view, conf) ->
-		LOM.getJSON "api/data/entity/#{conf.entityFullName}/instances", (instances) =>
+	accept: (view, context) ->
+		DataManager.loadData "entity/#{context.entity.fullName}/instances", (instances) =>
 			@buildTableBody(instances, view)
 
 	buildTableBody: (instances, view) ->
@@ -25,4 +25,4 @@ class TableEntityListingRenderer
 				entityFullName: instance.entity.fullName
 				id: instance.id
 
-return new TableEntityListingRenderer
+return new SimpleEntityListingRenderer

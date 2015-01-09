@@ -9,7 +9,6 @@ class MenuWidget extends GUIElement
 		tr.attr "id", "entity_" + entity.fullName
 		view.append tr
 		tr.click => 
-			LOM.loadScriptInNewView 'api/widget/entity/'+ entity.fullName,
-			entityFullName: entity.fullName
+			Controller.entityEvent View.emptyPage(), entity, 'GETALL'
 
 return new MenuWidget

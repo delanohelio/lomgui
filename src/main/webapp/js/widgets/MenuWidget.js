@@ -25,9 +25,7 @@
       tr.attr("id", "entity_" + entity.fullName);
       view.append(tr);
       return tr.click(function() {
-        return LOM.loadScriptInNewView('api/widget/entity/' + entity.fullName, {
-          entityFullName: entity.fullName
-        });
+        return Controller.entityEvent(View.emptyPage(), entity, 'GETALL');
       });
     };
 

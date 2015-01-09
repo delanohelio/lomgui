@@ -1,14 +1,20 @@
 (function() {
-  var TableEntityListingRenderer;
+  var TableEntityListingRenderer,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  TableEntityListingRenderer = (function() {
+  TableEntityListingRenderer = (function(_super) {
 
-    function TableEntityListingRenderer() {}
+    __extends(TableEntityListingRenderer, _super);
 
-    TableEntityListingRenderer.prototype.init = function(view, conf) {
+    function TableEntityListingRenderer() {
+      return TableEntityListingRenderer.__super__.constructor.apply(this, arguments);
+    }
+
+    TableEntityListingRenderer.prototype.accept = function(view, context) {
       var _this = this;
-      return LOM.getJSON("api/data/entity/" + conf.entityFullName + "/attributes", function(attributes) {
-        return _this.drawTable(attributes, conf.entityFullName, view);
+      return DataManager.loadData("entity/" + context.entities.fullName + "/attributes", function(attributes) {
+        return _this.drawTable(attributes, context.entities.fullName, view);
       });
     };
 
@@ -19,7 +25,7 @@
       table = $("<table>");
       this.page.append(table);
       this.buildTableHead(attributes, table);
-      return LOM.getJSON("api/data/entity/" + entityFullName + "/instances", function(instances) {
+      return DataManager.loadData("entity/" + entityFullName + "/instances", function(instances) {
         return _this.buildTableBody(instances, table);
       });
     };
@@ -79,7 +85,7 @@
 
     return TableEntityListingRenderer;
 
-  })();
+  })(GUIElement);
 
   return new TableEntityListingRenderer;
 

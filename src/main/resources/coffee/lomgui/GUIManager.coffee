@@ -18,6 +18,9 @@ GUIManager.loadWidget = (url, callback) ->
 GUIManager.getMainRenderer = (callback) ->
 	GUIManager.loadRenderer 'root', callback
 
+GUIManager.getRenderer = (entity, callback) ->
+	GUIManager.loadRenderer 'entity/' + entity.fullName, callback
+
 GUIManager.getWidget = (renderer, hook, callback) ->
 	GUIManager.loadWidget renderer.id + '/' + hook , callback
 

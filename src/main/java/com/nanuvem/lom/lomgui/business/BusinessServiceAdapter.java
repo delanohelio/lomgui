@@ -135,7 +135,7 @@ public class BusinessServiceAdapter {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/entity/{fullName}/instances")
 	public String getInstances(@PathParam("fullName") String fullName) {
-		Gson gson = new LomGsonFactory().getSimpleInstanceGson();
+		Gson gson = new LomGsonFactory().getInstanceGson();
 		return gson.toJson(LomBusinessFacade.getInstance()
 				.getInstancesByEntityFullName(fullName));
 	}

@@ -1,15 +1,15 @@
-class TableEntityListingRenderer
+class TableEntityListingRenderer extends GUIElement
 
-	init: (view, conf) ->
-		LOM.getJSON "api/data/entity/#{conf.entityFullName}/attributes", (attributes) =>
-			@drawTable(attributes, conf.entityFullName, view)
+	accept: (view, context) ->
+		DataManager.loadData "entity/#{context.entity.fullName}/attributes", (attributes) =>
+			@drawTable(attributes, context.entity.fullName, view)
 
 	drawTable: (attributes, entityFullName, view) ->
 		@page = view
 		table = $("<table>")
 		@page.append table
 		@buildTableHead(attributes, table);
-		LOM.getJSON "api/data/entity/#{entityFullName}/instances", (instances) =>
+		DataManager.loadData "entity/#{entityFullName}/instances", (instances) =>
 			@buildTableBody(instances, table)
 
 	buildTableHead: (attributes, table) ->

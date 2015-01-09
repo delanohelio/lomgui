@@ -58,7 +58,7 @@ public class EntityRendererTest {
 		driver.close();
 
 		for (Entity entity : entities) {
-			entityResource.delete(entity.getId().toString());
+//			entityResource.delete(entity.getId().toString());
 		}
 
 	}
