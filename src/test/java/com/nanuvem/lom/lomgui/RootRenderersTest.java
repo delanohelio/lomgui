@@ -15,8 +15,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.nanuvem.lom.api.Entity;
 import com.nanuvem.lom.lomgui.resources.EntityResource;
-import com.nanuvem.lom.lomgui.resources.Widget;
-import com.nanuvem.lom.lomgui.resources.WidgetResource;
+import com.nanuvem.lom.lomgui.resources.Renderer;
+import com.nanuvem.lom.lomgui.resources.RendererResource;
 
 public class RootRenderersTest {
 
@@ -25,7 +25,7 @@ public class RootRenderersTest {
 
 	private static EntityResource entityResource;
 	private static Entity entity;
-	private static WidgetResource rootWidgetResource;
+	private static RendererResource rootRendererResource;
 	
 	private final String idEntities = "entities";
 
@@ -33,7 +33,7 @@ public class RootRenderersTest {
 	public static void setUp() throws ParseException, IOException {
 		driver = new FirefoxDriver();
 		entityResource = new EntityResource();
-		rootWidgetResource = new WidgetResource("root");
+		rootRendererResource = new RendererResource("root");
 
 		entity = new Entity();
 		entity.setNamespace("test");
@@ -78,12 +78,12 @@ public class RootRenderersTest {
 		WebElement client = ElementHelper.waitAndFindElementById(driver,
 				idName, DEFAULT_TIMEOUT);
 		assertEquals(entity.getName(), client.getText());
+		setRootWidget("TableRootRenderer");
 	}
 
-	private void setRootWidget(String widgetName) {
-		Widget rootWidget = new Widget();
-		rootWidget.setName(widgetName);
-		rootWidgetResource.post(rootWidget);
+	private void setRootWidget(String rendererName) {
+		Renderer rootWidget = new Renderer(rendererName, rendererName);
+		rootRendererResource.post(rootWidget);
 	}
 
 }

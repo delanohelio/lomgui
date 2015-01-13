@@ -28,8 +28,8 @@ import com.nanuvem.lom.api.Instance;
 import com.nanuvem.lom.lomgui.resources.AttributeResource;
 import com.nanuvem.lom.lomgui.resources.EntityResource;
 import com.nanuvem.lom.lomgui.resources.InstanceResource;
-import com.nanuvem.lom.lomgui.resources.Widget;
-import com.nanuvem.lom.lomgui.resources.WidgetResource;
+import com.nanuvem.lom.lomgui.resources.Renderer;
+import com.nanuvem.lom.lomgui.resources.RendererResource;
 
 public class EntityRendererTest {
 
@@ -58,7 +58,7 @@ public class EntityRendererTest {
 		driver.close();
 
 		for (Entity entity : entities) {
-//			entityResource.delete(entity.getId().toString());
+			entityResource.delete(entity.getId().toString());
 		}
 
 	}
@@ -71,7 +71,7 @@ public class EntityRendererTest {
 		Attribute nameAttribute = createAndAddAttribute(entity, "name",
 				AttributeType.TEXT);
 
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 
 		String idAttributeName = "attribute_" + nameAttribute.getId();
 		WebElement attributeElement = ElementHelper.waitAndFindElementById(
@@ -89,7 +89,7 @@ public class EntityRendererTest {
 				.build();
 		Instance nameInstance = createAndAddInstance(entity, attributesValuesMap);
 
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 
 		String idAttributeValueName = "instance_" + nameInstance.getId()
 				+ "_attribute_" + nameAttribute.getId();
@@ -110,7 +110,7 @@ public class EntityRendererTest {
 		// Attribute
 		Attribute aAttribute = createAndAddAttribute(entity, "surname",
 				AttributeType.TEXT);
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 		String idAttribute = "attribute_" + aAttribute.getId();
 		WebElement attributeElement = ElementHelper.waitAndFindElementById(
 				driver, idAttribute, DEFAULT_TIMEOUT);
@@ -122,7 +122,7 @@ public class EntityRendererTest {
 		aAttribute = attributeResource
 				.toObject(attributeResource.put(entity.getFullName(), aAttribute
 						.getId().toString(), aAttribute));
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 		attributeElement = ElementHelper.waitAndFindElementById(driver,
 				idAttribute, DEFAULT_TIMEOUT);
 		assertNotNull("Attribute not found: " + aAttribute.getName(),
@@ -141,7 +141,7 @@ public class EntityRendererTest {
 		String attributeName = "quantity";
 		Attribute aAttribute = createAndAddAttribute(entity, attributeName,
 				AttributeType.INTEGER);
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 		String idAttribute = "attribute_" + aAttribute.getId();
 		WebElement attributeElement = ElementHelper.waitAndFindElementById(
 				driver, idAttribute, DEFAULT_TIMEOUT);
@@ -154,7 +154,7 @@ public class EntityRendererTest {
 		Entity wrongEntity = createAndAddEntity("test", "Order");
 		attributeResource.put(wrongEntity.getFullName(), aAttribute.getId()
 				.toString(), aAttribute);
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 		attributeElement = ElementHelper.waitAndFindElementById(driver,
 				idAttribute, DEFAULT_TIMEOUT);
 		assertNotNull("Attribute not found: " + aAttribute.getName(),
@@ -164,10 +164,10 @@ public class EntityRendererTest {
 	}
 
 	@Test
-	public void scenarioChangeEntityWidget() {
+	public void scenarioChangeEntityRenderer() {
 		Entity entity = createAndAddEntity("test", "Foo");
 
-		setWidget("SimpleEntityListingRenderer", "entity", entity.getFullName());
+		setRenderer("SimpleEntityListingRenderer", "entity", entity.getFullName());
 
 		Attribute attribute = createAndAddAttribute(entity, "FooAttribute",
 				AttributeType.TEXT);
@@ -177,16 +177,16 @@ public class EntityRendererTest {
 		Instance instance = createAndAddInstance(entity, attributesValuesMap);
 
 		String idInstance = "instance_" + instance.getId();
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 		WebElement instanceElement = ElementHelper.waitAndFindElementById(
 				driver, idInstance, DEFAULT_TIMEOUT);
 		assertNotNull("Instance not found: " + instance.getId(),
 				instanceElement);
 		assertEquals("p", instanceElement.getTagName());
 
-		setWidget("TableEntityListingRenderer", "entity", entity.getFullName());
+		setRenderer("TableEntityListingRenderer", "entity", entity.getFullName());
 
-		accessEntityWidget(entity);
+		accessEntityRenderer(entity);
 		instanceElement = ElementHelper.waitAndFindElementById(driver,
 				idInstance, DEFAULT_TIMEOUT);
 		assertNotNull("Instance not found: " + instance.getId(),
@@ -196,7 +196,7 @@ public class EntityRendererTest {
 	}
 
 	@Test
-	public void scenarioChangeAttributeWidget() {
+	public void scenarioChangeAttributeRenderer() {
 		Entity entity = createAndAddEntity("test", "User");
 
 		Attribute attribute = createAndAddAttribute(entity, "Password",
@@ -211,8 +211,8 @@ public class EntityRendererTest {
 		String idAttributeValueName = "instance_" + instance.getId()
 				+ "_attribute_" + attribute.getId();
 		
-		setWidget("PasswordAttributeRenderer", "entity/"+entity.getFullName(), attribute.getName());
-		accessEntityWidget(entity);
+		setRenderer("PasswordAttributeRenderer", "entity/"+entity.getFullName(), attribute.getName());
+		accessEntityRenderer(entity);
 		WebElement attributeValueElement = ElementHelper
 				.waitAndFindElementById(driver, idAttributeValueName,
 						DEFAULT_TIMEOUT);
@@ -222,7 +222,7 @@ public class EntityRendererTest {
 		
 	}
 
-	private void accessEntityWidget(Entity entity) {
+	private void accessEntityRenderer(Entity entity) {
 		driver.get("http://localhost:8080/lomgui/");
 
 		String idEntity = "entity_" + entity.getFullName();
@@ -293,15 +293,15 @@ public class EntityRendererTest {
 		return attributesValues;
 	}
 
-	private void setWidget(String widgetName, String target, String qualifier) {
-		String widgetResourseURL = target;
+	private void setRenderer(String rendererName, String target, String qualifier) {
+		String rendererResourseURL = target;
 		if (qualifier != null)
-			widgetResourseURL += "/" + qualifier;
-		Widget widget = new Widget();
-		widget.setName(widgetName);
-		HttpResponse response = WidgetResource.getWidgetResource(
-				widgetResourseURL).post(widget);
+			rendererResourseURL += "/" + qualifier;
+		Renderer renderer = new Renderer(rendererName, rendererName);
+		HttpResponse response = RendererResource.getRendererResource(
+				rendererResourseURL).post(renderer);
 		assertEquals(200, response.getStatusLine().getStatusCode());
 	}
 
 }
+

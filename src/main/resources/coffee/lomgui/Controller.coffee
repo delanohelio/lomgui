@@ -1,7 +1,7 @@
 window.Controller = {}
 
 class Context
-	constructor: (@entities, @entity, @method) ->
+	constructor: (@entities, @entity, @attributeValue, @method) ->
 
 Controller.openApp = (view) ->
 	GUIManager.getMainRenderer (mr) =>
@@ -9,5 +9,5 @@ Controller.openApp = (view) ->
 			mr.accept view, new Context allEntities
 
 Controller.entityEvent = (view, entity, method) ->
-	GUIManager.getRenderer entity, (er) =>
-		er.accept view, new Context null, entity, method
+	GUIManager.getRendererEntity entity, (er) =>
+		er.accept view, new Context null, entity, null, method

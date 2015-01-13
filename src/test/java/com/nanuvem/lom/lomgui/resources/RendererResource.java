@@ -7,34 +7,34 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nanuvem.restest.TypedResource;
 
-public class WidgetResource extends TypedResource<Widget> {
+public class RendererResource extends TypedResource<Renderer> {
 
 	private static final String ROOTURL = "http://localhost:8080/lomgui/api/renderer";
 	private Gson gson;
 
-	public static WidgetResource getWidgetResource(String resourceName) {
-		return new WidgetResource(resourceName);
+	public static RendererResource getRendererResource(String resourceName) {
+		return new RendererResource(resourceName);
 	}
 	
-	public WidgetResource(String resourceName) {
+	public RendererResource(String resourceName) {
 		super(ROOTURL + "/" + resourceName);
 		gson = new Gson();
 	}
 
 	@Override
-	protected String toJson(Widget widget) {
+	protected String toJson(Renderer widget) {
 		return gson.toJson(widget);
 	}
 
 	@Override
-	protected List<Widget> toList(String json) {
+	protected List<Renderer> toList(String json) {
 		Type collectionType = new TypeToken<List<Widget>>(){}.getType();
 		return gson.fromJson(json, collectionType);
 	}
 	
 	@Override
-	protected Widget toObject(String json) {
-		return gson.fromJson(json, Widget.class);
+	protected Renderer toObject(String json) {
+		return gson.fromJson(json, Renderer.class);
 	}
 
 }

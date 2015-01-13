@@ -1,6 +1,6 @@
-class DefaultAttributeRenderer
+class DefaultAttributeRenderer extends GUIElement
 
-    init: (view, conf) ->
-        view.append conf.data
-        
+	accept: (view, context) ->
+		view.append context.attributeValue.value
+
 return new DefaultAttributeRenderer

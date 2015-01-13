@@ -1,16 +1,14 @@
 class TableEntityListingRenderer extends GUIElement
 
 	accept: (view, context) ->
-		DataManager.loadData "entity/#{context.entity.fullName}/attributes", (attributes) =>
-			@drawTable(attributes, context.entity.fullName, view)
+		@drawTable(context, view)
 
-	drawTable: (attributes, entityFullName, view) ->
+	drawTable: (context, view) ->
 		@page = view
 		table = $("<table>")
 		@page.append table
-		@buildTableHead(attributes, table);
-		DataManager.loadData "entity/#{entityFullName}/instances", (instances) =>
-			@buildTableBody(instances, table)
+		@buildTableHead(context.entity.attributes, table);
+		@buildTableBody(context, table)
 
 	buildTableHead: (attributes, table) ->
 		thead = $("<thead>");
@@ -23,26 +21,28 @@ class TableEntityListingRenderer extends GUIElement
 			thHead.attr "id", "attribute_" + attribute.id
 			trHead.append thHead
 
-	buildTableBody: (instances, table) ->
-		if(instances.length > 0)
+	buildTableBody: (context, table) ->
+		if(context.entity.instances.length > 0)
 			tbody = $("<tbody>");
 			tbody.attr "id", "instances"
 			table.append tbody
-			instances.forEach (instance) =>
-				@buildTableLine(instance, tbody)
+			context.entity.instances.forEach (instance) =>
+				@buildTableLine(instance, context, tbody)
 		else
 			table.append "There are not instances"
 
-	buildTableLine: (instance, tbody) ->
+	buildTableLine: (instance, context, tbody) ->
+		entity = context.entity
 		trbody = $("<tr>")
 		trbody.attr "id", "instance_" + instance.id
 		tbody.append trbody
 		instance.values.forEach (attributeValue) =>
 			td  = $("<td>");
 			td.attr "id", "instance_" + instance.id + "_attribute_" + attributeValue.attribute.id
-			trbody.append td
-			LOM.loadScript 'api/widget/entity/' + instance.entity.fullName + '/' + attributeValue.attribute.name, td,
-				data: attributeValue.value
+			context.attributeValue = attributeValue
+			GUIManager.getRendererAttribute entity, attributeValue.attribute, (renderer) =>
+				renderer.accept td, context
+				trbody.append td
 		trbody.click => 
 			LOM.loadScript 'api/widget/entity/' + instance.entity.fullName + '/edit',
 				entityFullName: instance.entity.fullName

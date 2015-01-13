@@ -12,22 +12,16 @@
     }
 
     TableEntityListingRenderer.prototype.accept = function(view, context) {
-      var _this = this;
-      return DataManager.loadData("entity/" + context.entities.fullName + "/attributes", function(attributes) {
-        return _this.drawTable(attributes, context.entities.fullName, view);
-      });
+      return this.drawTable(context, view);
     };
 
-    TableEntityListingRenderer.prototype.drawTable = function(attributes, entityFullName, view) {
-      var table,
-        _this = this;
+    TableEntityListingRenderer.prototype.drawTable = function(context, view) {
+      var table;
       this.page = view;
       table = $("<table>");
       this.page.append(table);
-      this.buildTableHead(attributes, table);
-      return DataManager.loadData("entity/" + entityFullName + "/instances", function(instances) {
-        return _this.buildTableBody(instances, table);
-      });
+      this.buildTableHead(context.entity.attributes, table);
+      return this.buildTableBody(context, table);
     };
 
     TableEntityListingRenderer.prototype.buildTableHead = function(attributes, table) {
@@ -45,24 +39,25 @@
       });
     };
 
-    TableEntityListingRenderer.prototype.buildTableBody = function(instances, table) {
+    TableEntityListingRenderer.prototype.buildTableBody = function(context, table) {
       var tbody,
         _this = this;
-      if (instances.length > 0) {
+      if (context.entity.instances.length > 0) {
         tbody = $("<tbody>");
         tbody.attr("id", "instances");
         table.append(tbody);
-        return instances.forEach(function(instance) {
-          return _this.buildTableLine(instance, tbody);
+        return context.entity.instances.forEach(function(instance) {
+          return _this.buildTableLine(instance, context, tbody);
         });
       } else {
         return table.append("There are not instances");
       }
     };
 
-    TableEntityListingRenderer.prototype.buildTableLine = function(instance, tbody) {
-      var trbody,
+    TableEntityListingRenderer.prototype.buildTableLine = function(instance, context, tbody) {
+      var entity, trbody,
         _this = this;
+      entity = context.entity;
       trbody = $("<tr>");
       trbody.attr("id", "instance_" + instance.id);
       tbody.append(trbody);
@@ -70,9 +65,10 @@
         var td;
         td = $("<td>");
         td.attr("id", "instance_" + instance.id + "_attribute_" + attributeValue.attribute.id);
-        trbody.append(td);
-        return LOM.loadScript('api/widget/entity/' + instance.entity.fullName + '/' + attributeValue.attribute.name, td, {
-          data: attributeValue.value
+        context.attributeValue = attributeValue;
+        return GUIManager.getRendererAttribute(entity, attributeValue.attribute, function(renderer) {
+          renderer.accept(td, context);
+          return trbody.append(td);
         });
       });
       return trbody.click(function() {

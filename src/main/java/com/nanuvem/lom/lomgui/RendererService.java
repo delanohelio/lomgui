@@ -126,7 +126,7 @@ public class RendererService {
 	}
 
 	@GET
-	@Produces("text/plain; charset=utf-8")
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/entity/{fullName}/{attributeName}")
 	public Response getAttributeRenderer(@PathParam("fullName") String fullName,
 			@PathParam("attributeName") String attributeName) {
@@ -138,7 +138,10 @@ public class RendererService {
 		}
 		String result = FileSystemUtil.getFileScript(servletRequest, "renderers",
 				renderer.getFilename());
-		return Response.ok(result).build();
+		JsonObject json = new JsonObject();
+		json.addProperty("id", renderer.getName());
+		json.addProperty("script", result);
+		return Response.ok(json.toString()).build();
 	}
 
 	@POST

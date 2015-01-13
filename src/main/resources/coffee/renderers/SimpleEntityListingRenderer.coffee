@@ -1,17 +1,16 @@
-class SimpleEntityListingRenderer
+class SimpleEntityListingRenderer extends GUIElement
 
 	accept: (view, context) ->
-		DataManager.loadData "entity/#{context.entity.fullName}/instances", (instances) =>
-			@buildTableBody(instances, view)
+		@buildTableBody(context.entity, view)
 
-	buildTableBody: (instances, view) ->
-		if(instances.length > 0)
-			instances.forEach (instance) =>
-				@buildTableLine(instance, view)
+	buildTableBody: (entity, view) ->
+		if(entity.instances.length > 0)
+			entity.instances.forEach (instance) =>
+				@buildTableLine(instance, entity, view)
 		else
 			view.append "There are not instances"
 
-	buildTableLine: (instance, view) ->
+	buildTableLine: (instance, entity, view) ->
 		par = $("<p>")
 		par.attr "id", "instance_" + instance.id
 		view.append par
@@ -21,8 +20,8 @@ class SimpleEntityListingRenderer
 			par.append attributeValue.value
 			separator = ","
 		par.click => 
-			LOM.loadScript 'api/widget/entity/' + instance.entity.fullName + '/edit',
-				entityFullName: instance.entity.fullName
+			LOM.loadScript 'api/widget/entity/' + entity.fullName + '/edit',
+				entityFullName: entity.fullName
 				id: instance.id
 
 return new SimpleEntityListingRenderer

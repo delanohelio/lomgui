@@ -35,8 +35,12 @@
     return GUIManager.loadRenderer('root', callback);
   };
 
-  GUIManager.getRenderer = function(entity, callback) {
+  GUIManager.getRendererEntity = function(entity, callback) {
     return GUIManager.loadRenderer('entity/' + entity.fullName, callback);
+  };
+
+  GUIManager.getRendererAttribute = function(entity, attribute, callback) {
+    return GUIManager.loadRenderer('entity/' + entity.fullName + '/' + attribute.name, callback);
   };
 
   GUIManager.getWidget = function(renderer, hook, callback) {

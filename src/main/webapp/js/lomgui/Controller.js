@@ -5,8 +5,10 @@
 
   Context = (function() {
 
-    function Context(entities, method) {
+    function Context(entities, entity, attributeValue, method) {
       this.entities = entities;
+      this.entity = entity;
+      this.attributeValue = attributeValue;
       this.method = method;
     }
 
@@ -25,8 +27,8 @@
 
   Controller.entityEvent = function(view, entity, method) {
     var _this = this;
-    return GUIManager.getRenderer(entity, function(er) {
-      return er.accept(view, new Context(entity));
+    return GUIManager.getRendererEntity(entity, function(er) {
+      return er.accept(view, new Context(null, entity, null, method));
     });
   };
 

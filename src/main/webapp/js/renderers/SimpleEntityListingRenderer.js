@@ -1,29 +1,32 @@
 (function() {
-  var TableEntityListingRenderer;
+  var SimpleEntityListingRenderer,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  TableEntityListingRenderer = (function() {
+  SimpleEntityListingRenderer = (function(_super) {
 
-    function TableEntityListingRenderer() {}
+    __extends(SimpleEntityListingRenderer, _super);
 
-    TableEntityListingRenderer.prototype.init = function(view, conf) {
-      var _this = this;
-      return LOM.getJSON("api/data/entity/" + conf.entityFullName + "/instances", function(instances) {
-        return _this.buildTableBody(instances, view);
-      });
+    function SimpleEntityListingRenderer() {
+      return SimpleEntityListingRenderer.__super__.constructor.apply(this, arguments);
+    }
+
+    SimpleEntityListingRenderer.prototype.accept = function(view, context) {
+      return this.buildTableBody(context.entity, view);
     };
 
-    TableEntityListingRenderer.prototype.buildTableBody = function(instances, view) {
+    SimpleEntityListingRenderer.prototype.buildTableBody = function(entity, view) {
       var _this = this;
-      if (instances.length > 0) {
-        return instances.forEach(function(instance) {
-          return _this.buildTableLine(instance, view);
+      if (entity.instances.length > 0) {
+        return entity.instances.forEach(function(instance) {
+          return _this.buildTableLine(instance, entity, view);
         });
       } else {
         return view.append("There are not instances");
       }
     };
 
-    TableEntityListingRenderer.prototype.buildTableLine = function(instance, view) {
+    SimpleEntityListingRenderer.prototype.buildTableLine = function(instance, entity, view) {
       var par, separator,
         _this = this;
       par = $("<p>");
@@ -36,17 +39,17 @@
         return separator = ",";
       });
       return par.click(function() {
-        return LOM.loadScript('api/widget/entity/' + instance.entity.fullName + '/edit', {
-          entityFullName: instance.entity.fullName,
+        return LOM.loadScript('api/widget/entity/' + entity.fullName + '/edit', {
+          entityFullName: entity.fullName,
           id: instance.id
         });
       });
     };
 
-    return TableEntityListingRenderer;
+    return SimpleEntityListingRenderer;
 
-  })();
+  })(GUIElement);
 
-  return new TableEntityListingRenderer;
+  return new SimpleEntityListingRenderer;
 
 }).call(this);
